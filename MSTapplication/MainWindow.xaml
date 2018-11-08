@@ -6,20 +6,39 @@
         xmlns:local="clr-namespace:MSTapplication"
         mc:Ignorable="d"
         Title="MST-Algorithms" Height="450" Width="800">
-    <Grid>
-        <Menu VerticalAlignment="Top">
+    <Grid  Background="WhiteSmoke">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="5*"/>
+        </Grid.ColumnDefinitions>
+        <Menu VerticalAlignment="Top" >
             <MenuItem Header="File">
                 <MenuItem Header="Save Graph"/>
                 <MenuItem Header="Load Graph"/>
             </MenuItem>
             <MenuItem Header="View">
-                <MenuItem Header="Gmap"/>
-                <MenuItem Header="Charts"/>
+                <MenuItem Header="Gmap" IsCheckable="true"/>
+                <MenuItem Header="Charts" IsCheckable="true"/>
             </MenuItem>
         </Menu>
+
+        <Border BorderBrush="Gray" BorderThickness="1" Margin="30"  Grid.Column="0">
+            <Canvas Background="White"/>
+        </Border>
+
+        <Border BorderBrush="Gray" BorderThickness="1" Margin="30"  Grid.Column="1">
+            <ScrollViewer Background="White">
+                <StackPanel>
+                    <Button Content="Node" Margin="10"/>
+                    <Button Content="Edge" Margin="10"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+
     </Grid>
-        
-    
-        
-     
+
+
+
+
 </Window>
