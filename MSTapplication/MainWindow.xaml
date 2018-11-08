@@ -7,6 +7,19 @@
         mc:Ignorable="d"
         Title="MST-Algorithms" Height="450" Width="800">
     <Grid>
-        
+        <Menu VerticalAlignment="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="Save Graph"/>
+                <MenuItem Header="Load Graph"/>
+            </MenuItem>
+            <MenuItem Header="View">
+                <MenuItem Header="Gmap"/>
+                <MenuItem Header="Charts"/>
+            </MenuItem>
+        </Menu>
     </Grid>
+        
+    
+        
+     
 </Window>
