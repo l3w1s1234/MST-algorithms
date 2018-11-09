@@ -1,32 +1,29 @@
-﻿<Window x:Class="MSTapplication.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MSTapplication"
+        xmlns:WindowsPresentation="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation" x:Class="MSTapplication.Gmap_Window"
         mc:Ignorable="d"
-        Title="MST-Algorithms" Height="450" Width="800">
-    <Grid  Background="WhiteSmoke">
-
-        <Menu x:Name="menu" VerticalAlignment="Top" Background="#e6e6e6">
+        xmlns:gmaps="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
+        Title="Gmap_Window" Height="450" Width="800">
+    
+    <Grid>
+        <Menu VerticalAlignment="Top" Background="#e6e6e6">
             <MenuItem Header="File">
-                <MenuItem Header="Save Graph"/>
-                <MenuItem Header="Load Graph"/>
-            </MenuItem>
-            <MenuItem Header="View" >
-                <MenuItem x:Name="gmap" Header="Gmap" IsCheckable="true" Checked="gmap_Checked" Unchecked="gmap_Unchecked"/>
-                <MenuItem Header="Charts" IsCheckable="true"/>
+                <MenuItem Header="Save Gmap Graph"/>
+                <MenuItem Header="Load Gmap Graph"/>
             </MenuItem>
         </Menu>
-        <ToolBar VerticalAlignment="Bottom" Background="#e6e6e6">
-        </ToolBar>
+        <ToolBar VerticalAlignment="Bottom" Background="#e6e6e6"/>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5*"/>
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <Border BorderBrush="Gray" BorderThickness="1" Margin="30"  Grid.Column="0">
-                <Canvas Background="White"/>
+ 
             </Border>
 
             <Border BorderBrush="Gray" BorderThickness="1" Margin="30"  Grid.Column="1">
@@ -38,11 +35,8 @@
                 </ScrollViewer>
             </Border>
 
-           
+
         </Grid>
+
     </Grid>
-
-
-
-
 </Window>
