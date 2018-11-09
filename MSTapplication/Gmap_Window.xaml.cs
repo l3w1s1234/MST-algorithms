@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GMap.NET;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -33,16 +34,26 @@ namespace MSTapplication
         public Gmap_Window()
         {
             InitializeComponent();
+            //Gmap settings
+            gmap.MapProvider = GMap.NET.MapProviders.GoogleMapProvider.Instance;
+            GMap.NET.GMaps.Instance.Mode = GMap.NET.AccessMode.ServerOnly;
+            gmap.Position = new PointLatLng(55.955154, -3.188248);
+            gmap.MinZoom = 0;
+            gmap.MaxZoom = 24;
+            gmap.Zoom = 9;
+
 
             Loaded += ToolWindow_Loaded;
         }
-
+       
 
         void ToolWindow_Loaded(object sender, RoutedEventArgs e)
         {
             // Code to remove close box from window
             var hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
             SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
+
+            
         }
     }
 }
