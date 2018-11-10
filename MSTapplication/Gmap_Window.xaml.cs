@@ -41,6 +41,7 @@ namespace MSTapplication
             gmap.MinZoom = 0;
             gmap.MaxZoom = 24;
             gmap.Zoom = 9;
+            
 
 
             Loaded += ToolWindow_Loaded;
