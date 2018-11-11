@@ -10,7 +10,7 @@
 
         <Menu x:Name="menu" VerticalAlignment="Top" Background="#e6e6e6">
             <MenuItem Header="File">
-                <MenuItem Header="Save Graph"/>
+                <MenuItem x:Name="saveGraph" Header="Save Graph" Click="saveGraph_Click"/>
                 <MenuItem Header="Load Graph"/>
             </MenuItem>
             <MenuItem Header="View" >

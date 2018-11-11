@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -44,6 +45,24 @@ namespace MSTapplication
             base.OnClosed(e);
 
             Application.Current.Shutdown();
+        }
+
+        private void saveGraph_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog save= new SaveFileDialog();
+            save.Filter = "Text file|*.txt";
+            save.Title = "Save an Image File";
+            save.ShowDialog();
+
+            // If the file name is not an empty string open it for saving.  
+            if (save.FileName != "")
+            {
+                // Saves the Image via a FileStream created by the OpenFile method.  
+                System.IO.FileStream fs = (System.IO.FileStream)save.OpenFile();
+                
+           
+                fs.Close();
+            }
         }
     }
 }

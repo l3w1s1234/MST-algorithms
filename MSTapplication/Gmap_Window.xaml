@@ -12,7 +12,7 @@
     <Grid Background="WhiteSmoke">
         <Menu VerticalAlignment="Top" Background="#e6e6e6">
             <MenuItem Header="File">
-                <MenuItem Header="Save Gmap Graph"/>
+                <MenuItem Header="Save Gmap Graph" Click="MenuItem_Click"/>
                 <MenuItem Header="Load Gmap Graph"/>
             </MenuItem>
         </Menu>
