@@ -62,7 +62,7 @@ namespace MSTapplication
         {
             Microsoft.Win32.SaveFileDialog save = new SaveFileDialog();
             save.Filter = "Text file|*.txt";
-            save.Title = "Save an Image File";
+            save.Title = "Save an Text File";
             save.ShowDialog();
 
             // If the file name is not an empty string open it for saving.  
