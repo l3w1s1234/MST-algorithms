@@ -17,10 +17,12 @@ using System.Windows.Shapes;
 
 namespace MSTapplication
 {
-  
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
     public partial class MainWindow : Window
     
-    {
+{
         Gmap_Window window = new Gmap_Window();
 
         public MainWindow()
@@ -28,14 +30,11 @@ namespace MSTapplication
             InitializeComponent();
         }
 
-        //openGmap window when checked
         private void gmap_Checked(object sender, RoutedEventArgs e)
         {
             window = new Gmap_Window();
             window.Show();
         }
-
-        //close Gmap window when unchecked
         private void gmap_Unchecked(object sender, RoutedEventArgs e)
         {
             window.Close();
@@ -48,7 +47,6 @@ namespace MSTapplication
             Application.Current.Shutdown();
         }
 
-        //for saving a graph
         private void saveGraph_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog save= new SaveFileDialog();
