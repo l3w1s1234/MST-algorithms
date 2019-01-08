@@ -133,8 +133,8 @@ namespace MSTapplication
 
             nodeEllipse.StrokeThickness = 2;
             nodeEllipse.Stroke = Brushes.Black;
-            nodeEllipse.Width = 20;
-            nodeEllipse.Height = 20;
+            nodeEllipse.Width = 15;
+            nodeEllipse.Height = 15;
 
             //adding event handler for mouse controls
             nodeEllipse.MouseRightButtonDown += new MouseButtonEventHandler(nodeEllipse_MouseRightButtonDown);
