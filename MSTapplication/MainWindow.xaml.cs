@@ -87,7 +87,7 @@ namespace MSTapplication
             
         }
 
-        //when edg button is clicked
+        //when edge button is clicked
         private void EdgeButton_Click(object sender, RoutedEventArgs e)
         {
             if (placeEdge)
@@ -138,7 +138,7 @@ namespace MSTapplication
             nodeEllipse.Width = 20;
             nodeEllipse.Height = 20;
 
-            //adding event handler for right mouse down:
+            //adding event handler for mouse controls
             nodeEllipse.MouseRightButtonDown += new MouseButtonEventHandler(nodeEllipse_MouseRightButtonDown);
             nodeEllipse.MouseEnter += new MouseEventHandler(nodeEllipse_MouseEnter);
             nodeEllipse.MouseLeave += new MouseEventHandler(nodeEllipse_MouseLeave);

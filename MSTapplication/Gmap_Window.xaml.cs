@@ -1,4 +1,6 @@
 ﻿using GMap.NET;
+
+using GMap.NET.WindowsPresentation;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -17,9 +19,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+
 namespace MSTapplication
 {
-
+    
     /// <summary>
     /// Interaction logic for Gmap.xaml
     /// </summary>
@@ -32,6 +35,13 @@ namespace MSTapplication
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
+        //checkers for placing nodes and edges
+        private bool placeNode = false;
+        private bool placeEdge = false;
+
+        private double longitude;
+        private double latitude;
+
         public Gmap_Window()
         {
             InitializeComponent();
@@ -43,8 +53,6 @@ namespace MSTapplication
             gmap.MaxZoom = 24;
             gmap.Zoom = 9;
             
-
-
             Loaded += ToolWindow_Loaded;
         }
 
@@ -76,5 +84,90 @@ namespace MSTapplication
                 fs.Close();
             }
         }
+
+
+        private void NodeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (placeNode)
+            {
+                placeNode = false;
+            }
+            else
+            {
+                placeEdge = false;
+                placeNode = true;
+            }
+
+        }
+
+        private void EdgeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (placeEdge)
+            {
+                placeEdge = false;
+            }
+            else
+            {
+                placeEdge = true;
+                placeNode = false;
+            }
+
+        }
+
+
+        //for when the mouse has clicked inside canvas
+        private void mouseClickGmap(object sender, MouseButtonEventArgs e)
+        {
+          
+           
+            if (placeNode)
+            {
+                longitude = gmap.FromLocalToLatLng(Convert.ToInt32(e.GetPosition(gmap).X), Convert.ToInt32(e.GetPosition(gmap).Y)).Lng;
+                latitude = gmap.FromLocalToLatLng(Convert.ToInt32(e.GetPosition(gmap).X), Convert.ToInt32(e.GetPosition(gmap).Y)).Lat;
+                addNode();
+            }
+            else if (placeEdge)
+            {
+
+
+            }
+        }
+
+
+        //create a new node 
+        private void addNode()
+        {
+            SolidColorBrush solidColorBrush = new SolidColorBrush();
+            solidColorBrush.Color = Color.FromRgb(255, 0, 0);
+
+            GMapMarker node = new GMapMarker(new PointLatLng(latitude, longitude));
+            node.Shape = new Ellipse
+            {
+                Width = 15,
+                Height = 15,
+                Stroke = Brushes.Black,
+                StrokeThickness = 2,
+                Fill = solidColorBrush
+            };
+           
+            
+            //add marker to map
+            gmap.Markers.Add(node);
+        }
+
+        private void gmap_OnMarkerClick(GMapMarker item, MouseEventArgs e)
+        {
+            SolidColorBrush solidColorBrush = new SolidColorBrush();
+            solidColorBrush.Color = Color.FromRgb(255, 255, 0);
+            item.Shape = new Ellipse
+            {
+                Width = 15,
+                Height = 15,
+                Stroke = Brushes.Black,
+                StrokeThickness = 2,
+                Fill = solidColorBrush
+            };
+        }
+
     }
 }
