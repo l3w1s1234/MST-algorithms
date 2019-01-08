@@ -23,6 +23,11 @@ namespace MSTapplication
     {
         Gmap_Window window = new Gmap_Window();
 
+        private bool placeNode = false;
+        private bool placeEdge = false;
+
+        private Point nodePoint;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -53,7 +58,7 @@ namespace MSTapplication
         {
             SaveFileDialog save= new SaveFileDialog();
             save.Filter = "Text file|*.txt";
-            save.Title = "Save an Text File";
+            save.Title = "Save a Text File";
             save.ShowDialog();
 
             // If the file name is not an empty string open it for saving.  
@@ -66,5 +71,108 @@ namespace MSTapplication
                 fs.Close();
             }
         }
+
+        //when node button is pressed
+        private void nodeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if(placeNode)
+            {
+                placeNode = false;
+            }
+            else
+            {
+                placeEdge = false;
+                placeNode = true;
+            }
+            
+        }
+
+        private void EdgeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (placeEdge)
+            {
+                placeEdge = false;
+            }
+            else
+            {
+                placeEdge = true;
+                placeNode = false;
+            }
+        }
+
+
+        //for when the mouse has clicked inside canvas
+        private void mouseClickCanvas(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (placeNode)
+            {
+                nodePoint = Mouse.GetPosition(display);
+                addNode();
+            }
+            else if (placeEdge)
+            {
+
+
+            }
+        }
+
+
+        //create a new node 
+        private void addNode()
+        {
+            Ellipse nodeEllipse = new Ellipse();
+            SolidColorBrush solidColorBrush = new SolidColorBrush();
+
+            solidColorBrush.Color = Color.FromRgb(255,0,0);
+
+            nodeEllipse.Fill = solidColorBrush;
+
+            nodeEllipse.SetValue(Canvas.LeftProperty, nodePoint.X);
+            nodeEllipse.SetValue(Canvas.TopProperty, nodePoint.Y);
+
+            
+
+            nodeEllipse.StrokeThickness = 2;
+            nodeEllipse.Stroke = Brushes.Black;
+            nodeEllipse.Width = 10;
+            nodeEllipse.Height = 10;
+
+            //adding event handler for right mouse down:
+            nodeEllipse.MouseRightButtonDown += new MouseButtonEventHandler(nodeEllipse_MouseRightButtonDown);
+            nodeEllipse.MouseEnter += new MouseEventHandler(nodeEllipse_MouseEnter);
+            nodeEllipse.MouseLeave += new MouseEventHandler(nodeEllipse_MouseLeave);
+
+            display.Children.Add(nodeEllipse);
+        }
+
+        //remove nodes on right button down
+        void nodeEllipse_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Ellipse ellipse = sender as Ellipse;
+            display.Children.Remove(ellipse);
+        }
+
+        //highlight nodes when mouse hovers over them
+        void nodeEllipse_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Ellipse ellipse = sender as Ellipse;
+            SolidColorBrush solidColorBrush = new SolidColorBrush();
+            solidColorBrush.Color = Color.FromRgb(255, 255, 0);
+            ellipse.Fill = solidColorBrush;
+        }
+
+
+        //when mouse leaves reset color
+        void nodeEllipse_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Ellipse ellipse = sender as Ellipse;
+            SolidColorBrush solidColorBrush = new SolidColorBrush();
+            solidColorBrush.Color = Color.FromRgb(255, 0, 0);
+            ellipse.Fill = solidColorBrush;
+        }
+
+
+
+
     }
 }

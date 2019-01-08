@@ -29,8 +29,8 @@
             <Border BorderBrush="Gray" BorderThickness="1" Margin="30"  Grid.Column="1">
                 <ScrollViewer Background="White">
                     <StackPanel>
-                        <Button Content="Node" Margin="10"/>
-                        <Button Content="Edge" Margin="10"/>
+                        <Button x:Name="nodeButton" Content="Node" Margin="10" />
+                        <Button x:Name="edgeButton" Content="Edge" Margin="10"/>
                     </StackPanel>
                 </ScrollViewer>
             </Border>

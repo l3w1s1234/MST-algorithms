@@ -26,14 +26,14 @@
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <Border BorderBrush="Gray" BorderThickness="1" Margin="30"  Grid.Column="0">
-                <Canvas Background="White"/>
+                <Canvas x:Name="display" Background="White" MouseLeftButtonDown="mouseClickCanvas"/>
             </Border>
 
             <Border BorderBrush="Gray" BorderThickness="1" Margin="30"  Grid.Column="1">
                 <ScrollViewer Background="White">
                     <StackPanel>
-                        <Button Content="Node" Margin="10"/>
-                        <Button Content="Edge" Margin="10"/>
+                        <Button x:Name="nodeButton" Content="Node" Margin="10" Click="nodeButton_Click"/>
+                        <Button x:Name="edgeButton" Content="Edge" Margin="10" Click="EdgeButton_Click"/>
                     </StackPanel>
                 </ScrollViewer>
             </Border>
