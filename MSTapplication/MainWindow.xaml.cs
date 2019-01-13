@@ -23,10 +23,11 @@ namespace MSTapplication
     {
         Gmap_Window window = new Gmap_Window();
 
+        //checkers
         private bool placeNode = false;
         private bool placeEdge = false;
+        private bool dragable = false;
 
-        private Point nodePoint;
 
         public MainWindow()
         {
@@ -107,8 +108,8 @@ namespace MSTapplication
         {
             if (placeNode)
             {
-                nodePoint = Mouse.GetPosition(display);
-                addNode();
+                var mousePos = e.GetPosition(display);
+                addNode(mousePos);
             }
             else if (placeEdge)
             {
@@ -119,31 +120,69 @@ namespace MSTapplication
 
 
         //create a new node 
-        private void addNode()
+        private void addNode(Point mousePos)
         {
             Ellipse nodeEllipse = new Ellipse();
             SolidColorBrush solidColorBrush = new SolidColorBrush();
 
             solidColorBrush.Color = Color.FromRgb(255,0,0);
-
+            
             nodeEllipse.Fill = solidColorBrush;
 
-            nodeEllipse.SetValue(Canvas.LeftProperty, nodePoint.X);
-            nodeEllipse.SetValue(Canvas.TopProperty, nodePoint.Y);
-
-            
+           
 
             nodeEllipse.StrokeThickness = 2;
             nodeEllipse.Stroke = Brushes.Black;
             nodeEllipse.Width = 20;
             nodeEllipse.Height = 20;
 
+            nodeEllipse.SetValue(Canvas.LeftProperty, mousePos.X -(nodeEllipse.Width/2));
+            nodeEllipse.SetValue(Canvas.TopProperty, mousePos.Y - (nodeEllipse.Height/ 2));
+
+
             //adding event handler for mouse controls
             nodeEllipse.MouseRightButtonDown += new MouseButtonEventHandler(nodeEllipse_MouseRightButtonDown);
+            nodeEllipse.MouseLeftButtonDown += new MouseButtonEventHandler(nodeEllipse_MouseLeftButtonDown);
+            nodeEllipse.MouseLeftButtonUp += new MouseButtonEventHandler(nodeEllipse_MouseLeftButtonUp);
             nodeEllipse.MouseEnter += new MouseEventHandler(nodeEllipse_MouseEnter);
             nodeEllipse.MouseLeave += new MouseEventHandler(nodeEllipse_MouseLeave);
+            nodeEllipse.MouseMove += new MouseEventHandler(nodeEllipse_MouseMove);
 
             display.Children.Add(nodeEllipse);
+        }
+
+        //controls if node has been pressed 
+        private void nodeEllipse_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            dragable = true;
+            Ellipse ellipse = sender as Ellipse;
+            ellipse.CaptureMouse();
+        }
+
+        //controls if node has been released
+        private void nodeEllipse_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            dragable = false;
+            Ellipse ellipse = sender as Ellipse;
+            ellipse.ReleaseMouseCapture();
+        }
+
+        //controls nodes movement
+        private void nodeEllipse_MouseMove(object sender, MouseEventArgs e)
+        {
+
+            if (!dragable) return;
+
+            Ellipse ellipse = sender as Ellipse;
+
+            // get the position of the mouse relative to the Canvas
+            var mousePos = e.GetPosition(display);
+
+            // center the rect on the mouse
+            double left = mousePos.X - (ellipse.ActualWidth / 2);
+            double top = mousePos.Y - (ellipse.ActualHeight / 2);
+            Canvas.SetLeft(ellipse, left);
+            Canvas.SetTop(ellipse, top);
         }
 
         //remove nodes on right button down
@@ -156,20 +195,34 @@ namespace MSTapplication
         //highlight nodes when mouse hovers over them
         private void nodeEllipse_MouseEnter(object sender, MouseEventArgs e)
         {
+
             Ellipse ellipse = sender as Ellipse;
             SolidColorBrush solidColorBrush = new SolidColorBrush();
             solidColorBrush.Color = Color.FromRgb(255, 255, 0);
             ellipse.Fill = solidColorBrush;
+
+            //cant place node while hovering over node only does this while in place node mode  
+            if(!placeEdge)
+            {
+                placeNode = false;
+            }
         }
 
 
         //when mouse leaves reset color
         private void nodeEllipse_MouseLeave(object sender, MouseEventArgs e)
         {
+
             Ellipse ellipse = sender as Ellipse;
             SolidColorBrush solidColorBrush = new SolidColorBrush();
             solidColorBrush.Color = Color.FromRgb(255, 0, 0);
             ellipse.Fill = solidColorBrush;
+
+            //cant place node while hovering over node only does this while in place node mode  
+            if (!placeEdge)
+            {
+                placeNode = true;
+            }
         }
 
         //resize all elements within canvas on resize
@@ -178,7 +231,7 @@ namespace MSTapplication
             Canvas canvas = sender as Canvas;
             SizeChangedEventArgs canvasChangedArgs = e;
             //check that there has been a change in size
-             if (canvasChangedArgs.PreviousSize.Width == 0) return;
+            if (canvasChangedArgs.PreviousSize.Width == 0) return;
 
              //set new sizes and old
             double old_Height = canvasChangedArgs.PreviousSize.Height;
