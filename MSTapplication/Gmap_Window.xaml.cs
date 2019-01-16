@@ -55,18 +55,17 @@ namespace MSTapplication
             
             Loaded += ToolWindow_Loaded;
         }
+       
 
-        // Remove the close window button
         void ToolWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            
+            // Code to remove close box from window
             var hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
             SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
 
             
         }
 
-        //for saving a graph
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.SaveFileDialog save = new SaveFileDialog();
