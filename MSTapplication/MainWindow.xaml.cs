@@ -28,7 +28,7 @@ namespace MSTapplication
         private bool placeEdge = false;
         private bool dragable = false;
 
-
+        Point originalPosition;
         public MainWindow()
         {
             InitializeComponent();
@@ -156,6 +156,7 @@ namespace MSTapplication
         {
             dragable = true;
             Ellipse ellipse = sender as Ellipse;
+            originalPosition = e.GetPosition(display);
             ellipse.CaptureMouse();
         }
 
@@ -165,6 +166,13 @@ namespace MSTapplication
             dragable = false;
             Ellipse ellipse = sender as Ellipse;
             ellipse.ReleaseMouseCapture();
+
+            //keep element within canvas
+            if (!display.IsMouseOver)
+            {
+                ellipse.SetValue(Canvas.LeftProperty, originalPosition.X - (ellipse.Width / 2));
+                ellipse.SetValue(Canvas.TopProperty, originalPosition.Y - (ellipse.Height / 2));
+            }
         }
 
         //controls nodes movement
