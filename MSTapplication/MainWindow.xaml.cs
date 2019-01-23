@@ -27,6 +27,10 @@ namespace MSTapplication
 
         //checkers
         private bool placeNode = false;
+
+        //this is so that placing nodes isnt re-enabled when hovering over node
+        private bool nodeHoverPlaceable = false;
+
         private bool placeEdge = false;
         private bool dragable = false;
 
@@ -77,11 +81,13 @@ namespace MSTapplication
             if(placeNode)
             {
                 placeNode = false;
+                nodeHoverPlaceable = false;
             }
             else
             {
                 placeEdge = false;
                 placeNode = true;
+                nodeHoverPlaceable = true;
             }
             
         }
@@ -208,7 +214,7 @@ namespace MSTapplication
             ellipse.Fill = solidColorBrush;
 
             //cant place node while hovering over node only does this while in place node mode  
-            if(!placeEdge)
+            if(placeNode)
             {
                 placeNode = false;
             }
@@ -224,11 +230,13 @@ namespace MSTapplication
             solidColorBrush.Color = Color.FromRgb(255, 0, 0);
             ellipse.Fill = solidColorBrush;
 
+            
             //cant place node while hovering over node only does this while in place node mode  
-            if (!placeEdge)
+            if (nodeHoverPlaceable)
             {
                 placeNode = true;
             }
+         
         }
 
         //resize all elements within canvas on resize
