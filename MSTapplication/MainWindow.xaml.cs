@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using simpleGraph;
 
 namespace MSTapplication
 {
@@ -23,6 +24,10 @@ namespace MSTapplication
     public partial class MainWindow : Window
     
 {
+        Graph mainGraph = new Graph(); 
+
+        
+
         Gmap_Window window = new Gmap_Window();
 
         //checkers
