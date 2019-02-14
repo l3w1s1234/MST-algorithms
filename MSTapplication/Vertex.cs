@@ -8,10 +8,12 @@ namespace simpleGraph
 {
     class Vertex
     {
-        private String data;
+        private String data { get; set; }
         private LinkedList<Edge> neighbours;
+        float x {get; set;}
+        float y { get; set; }
 
-        public Vertex(String d)
+        public Vertex(String d, double x, double y)
         {
             d = data;
         }

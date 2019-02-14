@@ -8,19 +8,27 @@ namespace simpleGraph
 {
     class Graph
     {
-        List<Vertex> nodes;
+        private Dictionary<String, Vertex> nodes ;
 
         public Graph()
         {
-
+            nodes = new Dictionary<string, Vertex> { };
         }
 
-        public void addNode(Vertex node)
+        public void addNode (string name,double x, double y)
         {
-            nodes.Add(node);
+           Vertex node = new Vertex(name,x,y);
+            nodes.Add(name, node);
         }
 
-        public void addEdge()
+        //get thew vertex when given a key
+        public Vertex GetVertex(String id)
+        {
+            return nodes[id];
+        }
+
+
+        public void addEdge(string name, double x1, double y1, double x2, double y2)
         {
 
         }

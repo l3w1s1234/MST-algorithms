@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using simpleGraph;
+using System.Text.RegularExpressions;
 
 namespace MSTapplication
 {
@@ -39,10 +40,31 @@ namespace MSTapplication
         private bool placeEdge = false;
         private bool dragable = false;
 
+       
+
+        private string nodeID = "_0";
+        private string edgeID = "_0";
         Point originalPosition;
+
+
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        //used to change id for nodes
+        private void incrementID(ref string s)
+        {
+            int i = 0;
+            String number = Regex.Match(s, @"\d").ToString();
+
+            try { Int32.TryParse(number, out i);
+                i++;
+                s = "_" + i.ToString();
+            }
+            catch { System.Diagnostics.Debug.WriteLine("increment Failed"); }
+
+            
         }
 
         private void gmap_Checked(object sender, RoutedEventArgs e)
@@ -121,12 +143,37 @@ namespace MSTapplication
                 addNode(mousePos);
             }
             else if (placeEdge)
-            {
-
+            {             
 
             }
         }
 
+
+       //get the nodes postion that the edges will connect to
+        private void saveNodePos()
+        {
+
+        }
+
+        //draw Edge
+        private void drawEdge(double x1, double y1, double x2, double y2)
+        {
+            Line edge = new Line();
+
+            edge.Stroke = Brushes.Black;
+
+            edge.X1 = x1;
+            edge.Y1 = y1;
+            edge.X2 = x2;
+            edge.Y2 = y2;
+
+            edge.StrokeThickness = 2;
+
+            edge.Name=edgeID;
+            incrementID(ref edgeID);
+
+            display.Children.Add(edge);
+        }
 
         //create a new node 
         private void addNode(Point mousePos)
@@ -138,17 +185,23 @@ namespace MSTapplication
             
             nodeEllipse.Fill = solidColorBrush;
 
-           
+            double x = mousePos.X;
+            double y = mousePos.Y;
 
             nodeEllipse.StrokeThickness = 2;
             nodeEllipse.Stroke = Brushes.Black;
             nodeEllipse.Width = 15;
             nodeEllipse.Height = 15;
 
-            nodeEllipse.SetValue(Canvas.LeftProperty, mousePos.X -(nodeEllipse.Width/2));
-            nodeEllipse.SetValue(Canvas.TopProperty, mousePos.Y - (nodeEllipse.Height/ 2));
+            nodeEllipse.SetValue(Canvas.LeftProperty, x - (nodeEllipse.Width / 2));
+            nodeEllipse.SetValue(Canvas.TopProperty, y - (nodeEllipse.Height / 2));
 
+            //add to graph
+            mainGraph.addNode(nodeID, x, y);
 
+            nodeEllipse.Name = nodeID;
+            incrementID(ref nodeID);
+         
             //adding event handler for mouse controls
             nodeEllipse.MouseRightButtonDown += new MouseButtonEventHandler(nodeEllipse_MouseRightButtonDown);
             nodeEllipse.MouseLeftButtonDown += new MouseButtonEventHandler(nodeEllipse_MouseLeftButtonDown);
@@ -158,13 +211,24 @@ namespace MSTapplication
             nodeEllipse.MouseMove += new MouseEventHandler(nodeEllipse_MouseMove);
 
             display.Children.Add(nodeEllipse);
+
+            
         }
 
         //controls if node has been pressed 
         private void nodeEllipse_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            var mousePos = e.GetPosition(display);
+
             dragable = true;
             Ellipse ellipse = sender as Ellipse;
+
+            //show name of ellipse
+            nodeName.Text = ellipse.Name;
+
+            
+            
+
             originalPosition = e.GetPosition(display);
             ellipse.CaptureMouse();
         }
@@ -172,6 +236,7 @@ namespace MSTapplication
         //controls if node has been released
         private void nodeEllipse_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+           
             dragable = false;
             Ellipse ellipse = sender as Ellipse;
             ellipse.ReleaseMouseCapture();

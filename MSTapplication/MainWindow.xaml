@@ -34,6 +34,8 @@
                     <StackPanel>
                         <Button x:Name="nodeButton" Content="Node" Margin="10" Click="nodeButton_Click"/>
                         <Button x:Name="edgeButton" Content="Edge" Margin="10" Click="EdgeButton_Click"/>
+                        <Label Content="Node Name: " />
+                        <TextBox x:Name="nodeName" Margin="10"/>
                     </StackPanel>
                 </ScrollViewer>
             </Border>
