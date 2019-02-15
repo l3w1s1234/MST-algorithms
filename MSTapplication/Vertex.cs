@@ -8,14 +8,17 @@ namespace simpleGraph
 {
     class Vertex
     {
-        private String data { get; set; }
-        private LinkedList<Edge> neighbours;
-        float x {get; set;}
-        float y { get; set; }
+        public String data { get; set; }
+        public LinkedList<Edge> neighbours;
+        public double X {get; set;}
+        public double Y { get; set; }
 
         public Vertex(String d, double x, double y)
         {
-            d = data;
+            neighbours = new LinkedList<Edge>();
+            data = d;
+            X = x;
+            Y = y;
         }
 
         //add a neighbour to list
@@ -24,6 +27,31 @@ namespace simpleGraph
             neighbours.AddFirst(edge);
         }
 
+        //returns true or false if node is a neighour
+        public Boolean hasNeighbour(Vertex n)
+        {
+            foreach(Edge e in neighbours)
+            {
+                if(e.node1 == n || e.node2 == n)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        //returns true or false if node is any neighour
+        public Boolean hasNeighbours()
+        {
+            if(neighbours == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
         //get a list of the neighbours  connected tyo this node
         public LinkedList<Edge> getNeighbour()
         {

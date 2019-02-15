@@ -15,6 +15,7 @@ namespace simpleGraph
             nodes = new Dictionary<string, Vertex> { };
         }
 
+        //add node to graph
         public void addNode (string name,double x, double y)
         {
            Vertex node = new Vertex(name,x,y);
@@ -27,10 +28,14 @@ namespace simpleGraph
             return nodes[id];
         }
 
-
-        public void addEdge(string name, double x1, double y1, double x2, double y2)
+        //add edge to nodes by using the name of both nodes
+        public void addEdge(float weight, String n1ID, String n2ID, String id)
         {
-
+            var n1 = nodes[n1ID];
+            var n2 = nodes[n2ID];
+            Edge edge = new Edge(ref n1, ref n2, weight,id);
+            n1.addNeighbour(ref edge);
+            n2.addNeighbour(ref edge);
         }
 
     }

@@ -37,11 +37,11 @@ namespace MSTapplication
         //this is so that placing nodes isnt re-enabled when hovering over node
         private bool nodeHoverPlaceable = false;
 
-        private bool placeEdge = false;
+        
         private bool dragable = false;
 
-       
 
+        private Dictionary<String,Line> drawableEdges = new Dictionary<String, Line>();
         private string nodeID = "_0";
         private string edgeID = "_0";
         Point originalPosition;
@@ -112,27 +112,36 @@ namespace MSTapplication
             }
             else
             {
-                placeEdge = false;
+                
                 placeNode = true;
                 nodeHoverPlaceable = true;
             }
             
         }
 
-        //when edge button is clicked
-        private void EdgeButton_Click(object sender, RoutedEventArgs e)
+        //when edge has been added
+        private void addEdge_Click(object sender, RoutedEventArgs e)
         {
-            if (placeEdge)
+            try
             {
-                placeEdge = false;
+                //get node data
+                var node1 = mainGraph.GetVertex(Node1.Text);
+                var node2 = mainGraph.GetVertex(Node2.Text);
+                float weight = float.Parse(Weight.Text);
+
+                //check edge doesnt exist and then add to graph and draw
+                if(!node1.hasNeighbour(node2))
+                {
+                    mainGraph.addEdge(weight, node1.data, node2.data,edgeID);
+                    drawEdge(node1.X, node1.Y, node2.X, node2.Y);
+                }
+                
             }
-            else
+            catch
             {
-                placeEdge = true;
-                placeNode = false;
+                System.Diagnostics.Debug.WriteLine("Adding edge failed");
             }
         }
-
 
         //for when the mouse has clicked inside canvas
         private void mouseClickCanvas(object sender, System.Windows.Input.MouseEventArgs e)
@@ -142,18 +151,11 @@ namespace MSTapplication
                 var mousePos = e.GetPosition(display);
                 addNode(mousePos);
             }
-            else if (placeEdge)
-            {             
-
-            }
+            
         }
 
 
-       //get the nodes postion that the edges will connect to
-        private void saveNodePos()
-        {
-
-        }
+       
 
         //draw Edge
         private void drawEdge(double x1, double y1, double x2, double y2)
@@ -170,6 +172,8 @@ namespace MSTapplication
             edge.StrokeThickness = 2;
 
             edge.Name=edgeID;
+
+            drawableEdges.Add(edge.Name, edge);
             incrementID(ref edgeID);
 
             display.Children.Add(edge);
@@ -247,14 +251,31 @@ namespace MSTapplication
                 ellipse.SetValue(Canvas.LeftProperty, originalPosition.X - (ellipse.Width / 2));
                 ellipse.SetValue(Canvas.TopProperty, originalPosition.Y - (ellipse.Height / 2));
             }
+            
         }
 
+        //redraw edge postion
+       private void updateEdge(ref Vertex v)
+        {
+            foreach(Edge e in v.neighbours)
+            {
+                drawableEdges[e.data].X1 = e.node1.X;
+                drawableEdges[e.data].Y1 = e.node1.Y;
+
+                drawableEdges[e.data].X2 = e.node2.X;
+                drawableEdges[e.data].Y2 = e.node2.Y;
+
+            }
+            
+            
+        }
         //controls nodes movement
         private void nodeEllipse_MouseMove(object sender, MouseEventArgs e)
         {
 
             if (!dragable) return;
 
+            Canvas canvas = sender as Canvas;
             Ellipse ellipse = sender as Ellipse;
 
             // get the position of the mouse relative to the Canvas
@@ -263,6 +284,17 @@ namespace MSTapplication
             // center the rect on the mouse
             double left = mousePos.X - (ellipse.ActualWidth / 2);
             double top = mousePos.Y - (ellipse.ActualHeight / 2);
+
+            //update node in graph
+            var node = mainGraph.GetVertex(ellipse.Name);
+            node.X = mousePos.X;
+            node.Y = mousePos.Y;
+            if(node.hasNeighbours())
+            {
+                updateEdge(ref node);
+            }
+            
+
             Canvas.SetLeft(ellipse, left);
             Canvas.SetTop(ellipse, top);
         }

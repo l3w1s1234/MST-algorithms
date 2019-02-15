@@ -8,15 +8,17 @@ namespace simpleGraph
 {
     class Edge
     {
-        private Vertex node1 { get; set; }
-        private Vertex node2 { get; set; }
-        private int weight { get; set; }
+        public string data { get; set; }
+        public Vertex node1 { get; set; }
+        public  Vertex node2 { get; set; }
+        private float weight { get; set; }
 
-        public Edge(ref Vertex n1, ref Vertex n2, ref int w)
+        public Edge(ref Vertex n1, ref Vertex n2, float w, String id)
         {
             node1 = n1;
             node2 = n2;
             weight = w;
+            data = id;
         }
 
     }
