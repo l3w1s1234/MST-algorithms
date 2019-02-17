@@ -40,8 +40,11 @@ namespace MSTapplication
         
         private bool dragable = false;
 
-
+        //makes manipulation of shapes easier, allows to keep track of theses things
         private Dictionary<String,Line> drawableEdges = new Dictionary<String, Line>();
+        private Dictionary<String,Ellipse> drawableNodes = new Dictionary<String, Ellipse>();
+
+        //used to identify the shapes and what they are linked to on the Graph
         private string nodeID = "_0";
         private string edgeID = "_0";
         Point originalPosition;
@@ -161,6 +164,7 @@ namespace MSTapplication
         private void drawEdge(double x1, double y1, double x2, double y2)
         {
             Line edge = new Line();
+            var t = new TextBlock();
 
             edge.Stroke = Brushes.Black;
 
@@ -175,6 +179,7 @@ namespace MSTapplication
 
             drawableEdges.Add(edge.Name, edge);
             incrementID(ref edgeID);
+
 
             display.Children.Add(edge);
         }
@@ -202,6 +207,7 @@ namespace MSTapplication
 
             //add to graph
             mainGraph.addNode(nodeID, x, y);
+            drawableNodes.Add(nodeID, nodeEllipse);
 
             nodeEllipse.Name = nodeID;
             incrementID(ref nodeID);
@@ -250,6 +256,13 @@ namespace MSTapplication
             {
                 ellipse.SetValue(Canvas.LeftProperty, originalPosition.X - (ellipse.Width / 2));
                 ellipse.SetValue(Canvas.TopProperty, originalPosition.Y - (ellipse.Height / 2));
+
+                var node = mainGraph.GetVertex(ellipse.Name);
+
+                node.X = originalPosition.X;
+                node.Y = originalPosition.Y;
+                
+                updateEdge(ref node);
             }
             
         }
@@ -289,6 +302,8 @@ namespace MSTapplication
             var node = mainGraph.GetVertex(ellipse.Name);
             node.X = mousePos.X;
             node.Y = mousePos.Y;
+
+            //check that there are any connected edges and update their postion
             if(node.hasNeighbours())
             {
                 updateEdge(ref node);
