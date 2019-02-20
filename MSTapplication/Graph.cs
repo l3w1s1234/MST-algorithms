@@ -28,6 +28,18 @@ namespace simpleGraph
             return nodes[id];
         }
 
+        //get a list of all nodes in 
+        public List<Vertex> GetVertices()
+        {
+            var vertices = new List<Vertex>();
+
+            foreach(KeyValuePair<string,Vertex> entry in nodes)
+            {
+                vertices.Add(entry.Value);
+            }
+            return vertices;
+        }
+
         //add edge to nodes by using the name of both nodes
         public void addEdge(float weight, String n1ID, String n2ID, String id)
         {

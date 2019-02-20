@@ -25,9 +25,8 @@ namespace MSTapplication
     public partial class MainWindow : Window
     
 {
+        //name of the graph
         Graph mainGraph = new Graph(); 
-
-        
 
         Gmap_Window window = new Gmap_Window();
 
@@ -47,6 +46,8 @@ namespace MSTapplication
         //used to identify the shapes and what they are linked to on the Graph
         private string nodeID = "_0";
         private string edgeID = "_0";
+
+        //keeps the original postion of the node before it hasbeen moved
         Point originalPosition;
 
 
@@ -157,9 +158,6 @@ namespace MSTapplication
             
         }
 
-
-       
-
         //draw Edge
         private void drawEdge(double x1, double y1, double x2, double y2)
         {
@@ -225,6 +223,53 @@ namespace MSTapplication
             
         }
 
+        //display the neigbours within the node and weights
+        private void displayNeighbours(ref Vertex node)
+        {
+            //get all edges
+            foreach(Edge e in node.neighbours)
+            {
+                var sp = new StackPanel();
+                var sp2 = new StackPanel();
+                var label1 = new Label();
+                var label2 = new Label();
+                var textbox = new TextBox();
+                var button = new Button();
+
+                sp2.Orientation = Orientation.Horizontal;
+
+                button.Content = "Update";
+                button.MouseLeftButtonDown += new MouseButtonEventHandler(setEdgeWeight);
+
+                textbox.Text = e.weight.ToString();
+                textbox.Margin = new Thickness(5);
+
+                var n = e.node1;
+
+                if(e.node1 == node)
+                {
+                    n = e.node2;
+                }
+
+                label1.Content = "Node: " + n.data;
+                label2.Content = "Weight: ";
+
+                //add elements to stack panels and listbox
+                sp2.Children.Add(label2);
+                sp.Children.Add(label1);
+                sp.Children.Add(sp2);
+                sp2.Children.Add(textbox);
+                sp.Children.Add(button);
+                
+                nodeNeighbours.Items.Add(sp);
+            }
+        }
+
+        //set the edge weight
+        private void setEdgeWeight(object sender, MouseButtonEventArgs e)
+        {
+            
+        }
         //controls if node has been pressed 
         private void nodeEllipse_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -236,7 +281,11 @@ namespace MSTapplication
             //show name of ellipse
             nodeName.Text = ellipse.Name;
 
-            
+            var node = mainGraph.GetVertex(ellipse.Name);
+
+            //show nodes neighbours
+            nodeNeighbours.Items.Clear();
+            displayNeighbours(ref node);
             
 
             originalPosition = e.GetPosition(display);
@@ -262,13 +311,13 @@ namespace MSTapplication
                 node.X = originalPosition.X;
                 node.Y = originalPosition.Y;
                 
-                updateEdge(ref node);
+                updateEdge(node);
             }
             
         }
 
         //redraw edge postion
-       private void updateEdge(ref Vertex v)
+       private void updateEdge(Vertex v)
         {
             foreach(Edge e in v.neighbours)
             {
@@ -306,7 +355,7 @@ namespace MSTapplication
             //check that there are any connected edges and update their postion
             if(node.hasNeighbours())
             {
-                updateEdge(ref node);
+                updateEdge(node);
             }
             
 
@@ -374,20 +423,30 @@ namespace MSTapplication
             double scale_Height = new_Height / old_Height;
 
             //change elements in canvas
-            foreach (FrameworkElement element in canvas.Children )
-
+            foreach (KeyValuePair<string, Ellipse> element in drawableNodes)
             {
+                var node = mainGraph.GetVertex(element.Value.Name);
 
                 //get elemnts old left and top
-                double old_Left = Canvas.GetLeft(element);
-                double old_Top = Canvas.GetTop(element);
+                double old_Left = Canvas.GetLeft(element.Value);
+                double old_Top = Canvas.GetTop(element.Value);
 
+                
                //set left and top
-                Canvas.SetLeft(element, old_Left * scale_Width);
-                Canvas.SetTop(element, old_Top * scale_Height );
+                Canvas.SetLeft(element.Value, old_Left * scale_Width);
+                Canvas.SetTop(element.Value, old_Top * scale_Height );
 
-
+                //update nodes in graph
+                node.X = Canvas.GetLeft(element.Value)+(element.Value.ActualWidth/2);
+                node.Y = Canvas.GetTop(element.Value)+(element.Value.ActualHeight/2);
             }
+
+            //update lines/edges
+            foreach(Vertex n in mainGraph.GetVertices())
+            {
+                updateEdge(n);
+            }
+            
         }
 
 

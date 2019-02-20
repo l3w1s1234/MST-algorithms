@@ -36,7 +36,7 @@
                         <Label Content="Node Name: " />
                         <TextBox x:Name="nodeName" Margin="10"/>
                         <Label Content="Add Edge:"/>
-                        
+
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="3*"/>
@@ -55,8 +55,11 @@
                             <Label Content="Weight:" Grid.Column="0" Grid.Row="2"/>
                             <TextBox x:Name="Weight" Margin="5" Grid.Column="1" Grid.Row="2"/>
                         </Grid>
+
                         <Button x:Name="addEdge" Content="Add Edge" Margin=" 10" Click="addEdge_Click"/>
 
+                        <Label Content="Neighbours:" />
+                        <ListBox x:Name="nodeNeighbours" Margin="10"> </ListBox>
 
                     </StackPanel>
                 </ScrollViewer>
