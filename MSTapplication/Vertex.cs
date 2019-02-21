@@ -21,6 +21,18 @@ namespace simpleGraph
             Y = y;
         }
 
+        //set the weight of the edge
+        public void setNeighbourWeight(ref Vertex node, float weight)
+        {
+                foreach (Edge e in neighbours)
+                {
+                    if (e.node1 == node || e.node2 == node)
+                    {
+                        e.weight = weight;
+                    }
+                }
+        }
+
         //add a neighbour to list
         public void addNeighbour(ref Edge edge)
         {

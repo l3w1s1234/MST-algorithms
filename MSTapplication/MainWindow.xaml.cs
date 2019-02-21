@@ -42,6 +42,7 @@ namespace MSTapplication
         //makes manipulation of shapes easier, allows to keep track of theses things
         private Dictionary<String,Line> drawableEdges = new Dictionary<String, Line>();
         private Dictionary<String,Ellipse> drawableNodes = new Dictionary<String, Ellipse>();
+        private Dictionary<String, TextBox> changeWeight = new Dictionary<String, TextBox>();
 
         //used to identify the shapes and what they are linked to on the Graph
         private string nodeID = "_0";
@@ -237,19 +238,23 @@ namespace MSTapplication
                 var button = new Button();
 
                 sp2.Orientation = Orientation.Horizontal;
-
                 button.Content = "Update";
-                button.MouseLeftButtonDown += new MouseButtonEventHandler(setEdgeWeight);
+                button.Click += new RoutedEventHandler(setEdgeWeight);
 
                 textbox.Text = e.weight.ToString();
                 textbox.Margin = new Thickness(5);
 
                 var n = e.node1;
+                button.Name = n.data;
+                
 
-                if(e.node1 == node)
+                if (e.node1 == node)
                 {
                     n = e.node2;
+                    button.Name = n.data;
                 }
+
+                changeWeight.Add(button.Name, textbox);
 
                 label1.Content = "Node: " + n.data;
                 label2.Content = "Weight: ";
@@ -259,16 +264,32 @@ namespace MSTapplication
                 sp.Children.Add(label1);
                 sp.Children.Add(sp2);
                 sp2.Children.Add(textbox);
-                sp.Children.Add(button);
-                
+                sp.Children.Add(button); 
+
                 nodeNeighbours.Items.Add(sp);
             }
         }
 
         //set the edge weight
-        private void setEdgeWeight(object sender, MouseButtonEventArgs e)
+        private void setEdgeWeight(object sender, EventArgs e)
         {
+            Button but = sender as Button;
+            var tb = changeWeight[but.Name];
             
+
+            var node = mainGraph.GetVertex(but.Name);
+
+            try
+            {
+                node.setNeighbourWeight(ref node, float.Parse(tb.Text));
+            }
+            catch
+            {
+                System.Diagnostics.Debug.WriteLine("Changing Weight Failed");
+            }
+            
+
+
         }
         //controls if node has been pressed 
         private void nodeEllipse_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -284,6 +305,7 @@ namespace MSTapplication
             var node = mainGraph.GetVertex(ellipse.Name);
 
             //show nodes neighbours
+            changeWeight.Clear();
             nodeNeighbours.Items.Clear();
             displayNeighbours(ref node);
             
