@@ -8,7 +8,7 @@ namespace simpleGraph
 {
     class Graph
     {
-        private Dictionary<String, Vertex> nodes ;
+        private Dictionary<string, Vertex> nodes ;
 
         public Graph()
         {
@@ -48,6 +48,19 @@ namespace simpleGraph
             Edge edge = new Edge(ref n1, ref n2, weight,id);
             n1.addNeighbour(ref edge);
             n2.addNeighbour(ref edge);
+        }
+
+        //used to add another graphs nodes to the graphs
+        public void mergeGraph(Graph graph)
+        {
+            foreach (KeyValuePair<string, Vertex> n in graph.nodes)
+            {
+                if(!nodes.ContainsKey(n.Key))
+                {
+                    nodes.Add(n.Key, n.Value);
+                }
+            }
+
         }
 
     }
