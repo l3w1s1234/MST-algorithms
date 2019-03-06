@@ -39,5 +39,11 @@ namespace classicAlgorithms
         {
 
         }
+
+        //execute the boruvka algorithm
+        public void Astar(ref Graph g)
+        {
+
+        }
     }
 }

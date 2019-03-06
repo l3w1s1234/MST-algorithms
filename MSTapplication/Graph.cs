@@ -16,9 +16,9 @@ namespace simpleGraph
         }
 
         //add node to graph
-        public void addNode (string name,double x, double y)
+        public void addNode (string name)
         {
-           Vertex node = new Vertex(name,x,y);
+           Vertex node = new Vertex(name);
             nodes.Add(name, node);
         }
 

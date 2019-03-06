@@ -137,8 +137,14 @@ namespace MSTapplication
                 //check edge doesnt exist and then add to graph and draw
                 if(!node1.hasNeighbour(node2))
                 {
+                    var x1 = Canvas.GetLeft(drawableNodes[node1.data]) + (drawableNodes[node1.data].Width / 2);
+                    var y1 = Canvas.GetTop(drawableNodes[node1.data]) + (drawableNodes[node1.data].Height / 2);
+
+                    var x2 = Canvas.GetLeft(drawableNodes[node2.data]) + (drawableNodes[node2.data].Width / 2);
+                    var y2 = Canvas.GetTop(drawableNodes[node2.data]) + (drawableNodes[node2.data].Height / 2);
+
                     mainGraph.addEdge(weight, node1.data, node2.data,edgeID);
-                    drawEdge(node1.X, node1.Y, node2.X, node2.Y);
+                    drawEdge(x1,y1,x2,y2);
                 }
                 
             }
@@ -205,7 +211,7 @@ namespace MSTapplication
             nodeEllipse.SetValue(Canvas.TopProperty, y - (nodeEllipse.Height / 2));
 
             //add to graph
-            mainGraph.addNode(nodeID, x, y);
+            mainGraph.addNode(nodeID);
             drawableNodes.Add(nodeID, nodeEllipse);
 
             nodeEllipse.Name = nodeID;
@@ -291,6 +297,7 @@ namespace MSTapplication
 
 
         }
+
         //controls if node has been pressed 
         private void nodeEllipse_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -330,9 +337,6 @@ namespace MSTapplication
 
                 var node = mainGraph.GetVertex(ellipse.Name);
 
-                node.X = originalPosition.X;
-                node.Y = originalPosition.Y;
-                
                 updateEdge(node);
             }
             
@@ -341,13 +345,15 @@ namespace MSTapplication
         //redraw edge postion
        private void updateEdge(Vertex v)
         {
-            foreach(Edge e in v.neighbours)
-            {
-                drawableEdges[e.data].X1 = e.node1.X;
-                drawableEdges[e.data].Y1 = e.node1.Y;
 
-                drawableEdges[e.data].X2 = e.node2.X;
-                drawableEdges[e.data].Y2 = e.node2.Y;
+            foreach (Edge e in v.neighbours)
+            {
+
+                drawableEdges[e.data].X1 = Canvas.GetLeft(drawableNodes[e.node1.data]) + (drawableNodes[e.node1.data].Width/2);
+                drawableEdges[e.data].Y1 = Canvas.GetTop(drawableNodes[e.node1.data]) + (drawableNodes[e.node1.data].Height / 2);
+
+                drawableEdges[e.data].X2 = Canvas.GetLeft(drawableNodes[e.node2.data]) + (drawableNodes[e.node2.data].Width / 2);
+                drawableEdges[e.data].Y2 = Canvas.GetTop(drawableNodes[e.node2.data]) + (drawableNodes[e.node2.data].Height / 2);
 
             }
             
@@ -371,8 +377,6 @@ namespace MSTapplication
 
             //update node in graph
             var node = mainGraph.GetVertex(ellipse.Name);
-            node.X = mousePos.X;
-            node.Y = mousePos.Y;
 
             //check that there are any connected edges and update their postion
             if(node.hasNeighbours())
@@ -458,9 +462,7 @@ namespace MSTapplication
                 Canvas.SetLeft(element.Value, old_Left * scale_Width);
                 Canvas.SetTop(element.Value, old_Top * scale_Height );
 
-                //update nodes in graph
-                node.X = Canvas.GetLeft(element.Value)+(element.Value.ActualWidth/2);
-                node.Y = Canvas.GetTop(element.Value)+(element.Value.ActualHeight/2);
+                
             }
 
             //update lines/edges

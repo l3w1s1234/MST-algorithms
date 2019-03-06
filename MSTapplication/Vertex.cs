@@ -10,15 +10,12 @@ namespace simpleGraph
     {
         public String data { get; set; }
         public LinkedList<Edge> neighbours;
-        public double X {get; set;}
-        public double Y { get; set; }
 
-        public Vertex(String d, double x, double y)
+        public Vertex(String d)
         {
             neighbours = new LinkedList<Edge>();
             data = d;
-            X = x;
-            Y = y;
+            
         }
 
         //set the weight of the edge
