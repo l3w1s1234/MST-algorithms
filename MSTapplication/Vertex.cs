@@ -62,11 +62,33 @@ namespace simpleGraph
             }
         }
         //get a list of the neighbours  connected tyo this node
-        public LinkedList<Edge> getNeighbour()
+        public LinkedList<Edge> getNeighbours()
         {
             return neighbours;
         }
 
-      
+        
+
+        //remove an edge from the list
+        public void removeEdge(String edgeID)
+        {
+            try
+            {
+                foreach (Edge e in neighbours)
+                {
+                    if (e.data == edgeID)
+                    {
+                        neighbours.Remove(e);
+                    }
+                }
+            }
+            catch
+            {
+                System.Diagnostics.Debug.WriteLine("Removing edge failed");
+            }
+            
+
+        }
+
     }
 }

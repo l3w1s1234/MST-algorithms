@@ -189,6 +189,7 @@ namespace MSTapplication
             display.Children.Add(edge);
         }
 
+
         //create a new node 
         private void addNode(Point mousePos)
         {
@@ -359,6 +360,7 @@ namespace MSTapplication
             
             
         }
+
         //controls nodes movement
         private void nodeEllipse_MouseMove(object sender, MouseEventArgs e)
         {
@@ -393,7 +395,21 @@ namespace MSTapplication
         private void nodeEllipse_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             Ellipse ellipse = sender as Ellipse;
+            var edgeIDs = mainGraph.getEdgeIDs(ellipse.Name);
+
+            //remove from all arrays
+            mainGraph.removeEdges(ellipse.Name);
+            drawableNodes.Remove(ellipse.Name);
+            foreach(String edge in edgeIDs)
+            {
+                display.Children.Remove(drawableEdges[edge]);
+                drawableEdges.Remove(edge); 
+            }
+
             display.Children.Remove(ellipse);
+            
+
+            
         }
 
         //highlight nodes when mouse hovers over them

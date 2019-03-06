@@ -50,6 +50,49 @@ namespace simpleGraph
             n2.addNeighbour(ref edge);
         }
 
+        //get all the ids for the edges the node is connected to
+        public List<String> getEdgeIDs(String nodeID)
+        {
+            var node = nodes[nodeID];
+            List<string> edgeIDs = new List<string>();
+
+            foreach(Edge e in node.neighbours)
+            {
+                edgeIDs.Add(e.data);
+            }
+
+            return edgeIDs;
+        }
+
+        //remove all edges in the called vertex
+        public void removeEdges(String nodeID)
+        {
+            var node = nodes[nodeID];
+
+
+            foreach(Edge e in node.neighbours)
+            {
+                if(e.node1.data == node.data)
+                {
+                    e.node2.removeEdge(e.data);
+                }
+                else
+                {
+                    e.node1.removeEdge(e.data);
+                }
+            }
+            node.neighbours.Clear();
+
+        }
+
+        //remove called edge in the called vertex
+        public void removeEdge(String nodeID, String edgeID)
+        {
+            var node = nodes[nodeID];
+
+            node.removeEdge(edgeID);
+        }
+
         //used to add another graphs nodes to the graphs
         public void mergeGraph(Graph graph)
         {
