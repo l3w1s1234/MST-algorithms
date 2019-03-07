@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace simpleGraph
 {
-    class Graph
+    [Serializable()]
+    class Graph : ISerializable
     {
         private Dictionary<string, Vertex> nodes ;
 
@@ -106,5 +109,15 @@ namespace simpleGraph
 
         }
 
+        //for serialization
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("Nodes", nodes);
+        }
+
+        public Graph(SerializationInfo info, StreamingContext context)
+        {
+            nodes = (Dictionary<string, Vertex>)info.GetValue("Nodes", typeof(Dictionary<string, Vertex>));
+        }
     }
 }

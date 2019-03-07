@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace simpleGraph
 {
-    class Vertex
+    [Serializable()]
+    class Vertex : ISerializable
     {
         public String data { get; set; }
         public LinkedList<Edge> neighbours;
 
+
+        
         public Vertex(String d)
         {
             neighbours = new LinkedList<Edge>();
@@ -90,5 +95,16 @@ namespace simpleGraph
 
         }
 
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("Name", data);
+            info.AddValue("Neighbours", neighbours);
+        }
+
+        public Vertex(SerializationInfo info, StreamingContext context)
+        {
+            neighbours = (LinkedList<Edge>)info.GetValue("Neighbours", typeof(LinkedList<Edge>));
+            data = (string)info.GetValue("Name", typeof(string)); ;
+        }
     }
 }

@@ -11,7 +11,7 @@
         <Menu x:Name="menu" VerticalAlignment="Top" Background="#e6e6e6">
             <MenuItem Header="File">
                 <MenuItem x:Name="saveGraph" Header="Save Graph" Click="saveGraph_Click"/>
-                <MenuItem Header="Load Graph"/>
+                <MenuItem  x:Name="loadGraph" Header="Load Graph" Click="loadGraph_Click"/>
             </MenuItem>
             <MenuItem Header="View" >
                 <MenuItem x:Name="gmap" Header="Gmap" IsCheckable="true" Checked="gmap_Checked" Unchecked="gmap_Unchecked"/>

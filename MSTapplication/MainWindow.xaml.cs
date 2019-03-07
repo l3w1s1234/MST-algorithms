@@ -16,6 +16,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using simpleGraph;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Xml.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace MSTapplication
 {
@@ -72,6 +75,16 @@ namespace MSTapplication
             
         }
 
+        //get the id's integer
+        private int idInt(ref string s)
+        {
+            int i = 0;
+            String number = Regex.Match(s, @"\d").ToString();
+
+            Int32.TryParse(number, out i);
+
+            return i;      
+        }
         private void gmap_Checked(object sender, RoutedEventArgs e)
         {
             window = new Gmap_Window();
@@ -92,21 +105,186 @@ namespace MSTapplication
         private void saveGraph_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog save= new SaveFileDialog();
-            save.Filter = "Text file|*.txt";
+            save.Filter = "Graph Data|*.dat";
             save.Title = "Save a Text File";
             save.ShowDialog();
-
-            // If the file name is not an empty string open it for saving.  
-            if (save.FileName != "")
+            
+            if (save.FileName != "" && mainGraph != null)
             {
-                // Saves the Image via a FileStream created by the OpenFile method.  
-                System.IO.FileStream fs = (System.IO.FileStream)save.OpenFile();
+
+                try
+                {
+                    switch (save.FilterIndex)
+                    {
+                        case 1:
+                            Stream fs = (FileStream)save.OpenFile();
+                            BinaryFormatter bf = new BinaryFormatter();
+                            bf.Serialize(fs, mainGraph);
+                            fs.Close();
+                            break;
+                    }
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine("Save failed");
+                }
+            }
+            
+        }
+
+        private void loadGraph_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Filter = "Graph Data (*.dat)|*.dat";
+            openFile.Title = "Open a Graph Data file";
+            openFile.ShowDialog();
+
+            if(openFile.FileName != "")
+            {
+                try
+                {
+                    clearGraph();
+
+                    Stream fs = (FileStream)openFile.OpenFile();
+
+                    var bf = new BinaryFormatter();
+                    mainGraph = (Graph)bf.Deserialize(fs);
+                    fs.Close();
+
+                    randomEllipseEdges();
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine("Load failed");
+                }
                 
-           
-                fs.Close();
             }
         }
 
+        //clear everything from graph
+        private void clearGraph()
+        {
+            //clear all
+            mainGraph = null;
+            foreach (KeyValuePair<string, Line> key in drawableEdges)
+            {
+                display.Children.Remove(key.Value);
+            }
+            foreach (KeyValuePair<string, Ellipse> key in drawableNodes)
+            {
+                display.Children.Remove(key.Value);
+            }
+            drawableEdges.Clear();
+            drawableNodes.Clear();
+            nodeID = "_0";
+            edgeID = "_0";
+        }
+
+        //randomly generate the graph placement on the graph display
+        private void randomEllipseEdges()
+        {
+            Random random = new Random();
+
+            //draw ellipses and edges
+            foreach (Vertex node in mainGraph.GetVertices())
+            {
+                
+                Ellipse nodeEllipse = new Ellipse();
+                SolidColorBrush solidColorBrush = new SolidColorBrush();
+
+                solidColorBrush.Color = Color.FromRgb(255, 0, 0);
+
+                nodeEllipse.Fill = solidColorBrush;
+
+                double x = (double)random.Next(0,(int)display.ActualWidth);
+                double y = (double)random.Next(0, (int)display.ActualHeight);
+
+                nodeEllipse.StrokeThickness = 2;
+                nodeEllipse.Stroke = Brushes.Black;
+                nodeEllipse.Width = 15;
+                nodeEllipse.Height = 15;
+
+                nodeEllipse.SetValue(Canvas.LeftProperty, x - (nodeEllipse.Width / 2));
+                nodeEllipse.SetValue(Canvas.TopProperty, y - (nodeEllipse.Height / 2));
+
+                
+                drawableNodes.Add(node.data, nodeEllipse);
+
+                nodeEllipse.Name = node.data;
+                
+
+                //adding event handler for mouse controls
+                nodeEllipse.MouseRightButtonDown += new MouseButtonEventHandler(nodeEllipse_MouseRightButtonDown);
+                nodeEllipse.MouseLeftButtonDown += new MouseButtonEventHandler(nodeEllipse_MouseLeftButtonDown);
+                nodeEllipse.MouseLeftButtonUp += new MouseButtonEventHandler(nodeEllipse_MouseLeftButtonUp);
+                nodeEllipse.MouseEnter += new MouseEventHandler(nodeEllipse_MouseEnter);
+                nodeEllipse.MouseLeave += new MouseEventHandler(nodeEllipse_MouseLeave);
+                nodeEllipse.MouseMove += new MouseEventHandler(nodeEllipse_MouseMove);
+
+                display.Children.Add(nodeEllipse);
+
+            }
+            //draw edges
+            foreach (Vertex node in mainGraph.GetVertices())
+            {
+                foreach (Edge e in node.neighbours)
+                {
+                    if (!drawableEdges.ContainsKey(e.data))
+                    {
+                        Line edge = new Line();
+
+
+                        edge.Stroke = Brushes.Black;
+
+                        var x1 = Canvas.GetLeft(drawableNodes[e.node1.data]) + (drawableNodes[e.node1.data].Width / 2);
+                        var y1 = Canvas.GetTop(drawableNodes[e.node1.data]) + (drawableNodes[e.node1.data].Height / 2);
+                        edge.X1 = x1;
+                        edge.Y1 = y1;
+                        var x2 = Canvas.GetLeft(drawableNodes[e.node2.data]) + (drawableNodes[e.node2.data].Width / 2);
+                        var y2 = Canvas.GetTop(drawableNodes[e.node2.data]) + (drawableNodes[e.node2.data].Height / 2);
+                        edge.X2 = x2;
+                        edge.Y2 = y2;
+
+                        edge.StrokeThickness = 2;
+
+                        edge.Name = e.data;
+
+                        drawableEdges.Add(edge.Name, edge);
+                        incrementID(ref edgeID);
+
+
+                        display.Children.Add(edge);
+                    }
+                }
+            }
+                
+
+            //get the current id for the nodes and edges
+            int i = 0;
+            foreach(KeyValuePair<string,Ellipse> kp in drawableNodes)
+            {
+                var s = kp.Key;
+                var k = idInt(ref s);
+                if ( k > i)
+                {
+                    i = k;
+                }
+            }
+            i++;
+            nodeID = "_" + i.ToString();
+            i = 0;
+            foreach (KeyValuePair<string, Line> kp in drawableEdges)
+            {
+                var s = kp.Key;
+                var k = idInt(ref s);
+                if (k > i)
+                {
+                    i = k;
+                }
+            }
+            i++;
+            edgeID = "_" + i.ToString();
+        }
         //when node button is pressed
         private void nodeButton_Click(object sender, RoutedEventArgs e)
         {
@@ -169,7 +347,7 @@ namespace MSTapplication
         private void drawEdge(double x1, double y1, double x2, double y2)
         {
             Line edge = new Line();
-            var t = new TextBlock();
+            
 
             edge.Stroke = Brushes.Black;
 
@@ -195,7 +373,7 @@ namespace MSTapplication
         {
             Ellipse nodeEllipse = new Ellipse();
             SolidColorBrush solidColorBrush = new SolidColorBrush();
-
+            
             solidColorBrush.Color = Color.FromRgb(255,0,0);
             
             nodeEllipse.Fill = solidColorBrush;
