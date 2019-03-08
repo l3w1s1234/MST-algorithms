@@ -28,7 +28,7 @@ namespace simpleGraph
         {
                 foreach (Edge e in neighbours)
                 {
-                    if (e.node1 == node || e.node2 == node)
+                    if (e.node1 == node.data || e.node2 == node.data)
                     {
                         e.weight = weight;
                     }
@@ -46,7 +46,7 @@ namespace simpleGraph
         {
             foreach(Edge e in neighbours)
             {
-                if(e.node1 == n || e.node2 == n)
+                if(e.node1 == n.data || e.node2 == n.data)
                 {
                     return true;
                 }

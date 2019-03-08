@@ -48,7 +48,7 @@ namespace simpleGraph
         {
             var n1 = nodes[n1ID];
             var n2 = nodes[n2ID];
-            Edge edge = new Edge(ref n1, ref n2, weight,id);
+            Edge edge = new Edge(n1.data, n2.data, weight,id);
             n1.addNeighbour(ref edge);
             n2.addNeighbour(ref edge);
         }
@@ -75,13 +75,13 @@ namespace simpleGraph
 
             foreach(Edge e in node.neighbours)
             {
-                if(e.node1.data == node.data)
+                if(e.node1 == node.data)
                 {
-                    e.node2.removeEdge(e.data);
+                  nodes[e.node2].removeEdge(e.data);
                 }
                 else
                 {
-                    e.node1.removeEdge(e.data);
+                    nodes[e.node1].removeEdge(e.data);
                 }
             }
             node.neighbours.Clear();

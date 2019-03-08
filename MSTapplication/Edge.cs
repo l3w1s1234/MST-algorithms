@@ -5,22 +5,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using Newtonsoft.Json;
 
 namespace simpleGraph
 {
     [Serializable()]
     class Edge : ISerializable
     {
+        
         public string data { get; set; }
-        public Vertex node1 { get; set; }
-        public  Vertex node2 { get; set; }
+        public string node1 { get; set; }
+        public string node2 { get; set; }
         public float weight { get; set; }
 
         
-        public Edge(ref Vertex n1, ref Vertex n2, float w, String id)
+        public Edge(string n1ID, string n2ID, float w, String id)
         {
-            node1 = n1;
-            node2 = n2;
+            node1 = n1ID;
+            node2 = n2ID;
             weight = w;
             data = id;
         }
@@ -35,8 +37,8 @@ namespace simpleGraph
 
         public Edge(SerializationInfo info, StreamingContext context)
         {
-            node1 = (Vertex)info.GetValue("Node1", typeof(Vertex));
-            node2 = (Vertex)info.GetValue("Node2", typeof(Vertex)); ;
+            node1 = (string)info.GetValue("Node1", typeof(string));
+            node2 = (string)info.GetValue("Node2", typeof(string)); ;
             weight = (float)info.GetValue("Weight", typeof(float)); ;
             data = (string)info.GetValue("Data", typeof(string)); ;
         }

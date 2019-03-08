@@ -19,6 +19,7 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Xml.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using Newtonsoft.Json;
 
 namespace MSTapplication
 {
@@ -105,7 +106,7 @@ namespace MSTapplication
         private void saveGraph_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog save= new SaveFileDialog();
-            save.Filter = "Graph Data|*.dat";
+            save.Filter = "Graph Data|*.dat|Json|*.json";
             save.Title = "Save a Text File";
             save.ShowDialog();
             
@@ -122,6 +123,14 @@ namespace MSTapplication
                             bf.Serialize(fs, mainGraph);
                             fs.Close();
                             break;
+                        case 2:
+                            using (StreamWriter file = new StreamWriter(save.OpenFile()))
+                            {
+                                JsonSerializer serializer = new JsonSerializer();
+                                
+                                serializer.Serialize(file, mainGraph);
+                            }
+                            break;
                     }
                 }
                 catch
@@ -132,32 +141,56 @@ namespace MSTapplication
             
         }
 
+        //load graph data
         private void loadGraph_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
-            openFile.Filter = "Graph Data (*.dat)|*.dat";
+            openFile.Filter = "Graph Data|*.dat|Graph Json|*.json|All Files|*.dat;*.json";
             openFile.Title = "Open a Graph Data file";
             openFile.ShowDialog();
 
-            if(openFile.FileName != "")
+            var ext = System.IO.Path.GetExtension(openFile.FileName);
+            if (openFile.FileName != "")
             {
-                try
+                //clear previous graph data
+                clearGraph();
+
+                //check file extension and convert file accordingly
+                if(ext == ".dat")
                 {
-                    clearGraph();
+                    try
+                    {
+                        Stream fs = (FileStream)openFile.OpenFile();
+                        var bf = new BinaryFormatter();
+                        mainGraph = (Graph)bf.Deserialize(fs);
+                        fs.Close();
+                        //put graph to screen using random coordinates
+                        randomEllipseEdges();
+                    }
+                    catch
+                    {
+                        System.Diagnostics.Debug.WriteLine("Load failed");
+                    }
 
-                    Stream fs = (FileStream)openFile.OpenFile();
-
-                    var bf = new BinaryFormatter();
-                    mainGraph = (Graph)bf.Deserialize(fs);
-                    fs.Close();
-
-                    randomEllipseEdges();
                 }
-                catch
+                 else if(ext == ".json")
                 {
-                    System.Diagnostics.Debug.WriteLine("Load failed");
+                    TextReader reader = null;
+                    try
+                    {
+                        reader = new StreamReader(openFile.OpenFile());
+                        var fileContents = reader.ReadToEnd();
+                        mainGraph = JsonConvert.DeserializeObject<Graph>(fileContents);
+                        reader.Close();
+                        //put graph to screen using random coordinates
+                        randomEllipseEdges();
+                    }
+                    catch
+                    {
+                        System.Diagnostics.Debug.WriteLine("Load failed");
+                    }
                 }
-                
+
             }
         }
 
@@ -236,12 +269,12 @@ namespace MSTapplication
 
                         edge.Stroke = Brushes.Black;
 
-                        var x1 = Canvas.GetLeft(drawableNodes[e.node1.data]) + (drawableNodes[e.node1.data].Width / 2);
-                        var y1 = Canvas.GetTop(drawableNodes[e.node1.data]) + (drawableNodes[e.node1.data].Height / 2);
+                        var x1 = Canvas.GetLeft(drawableNodes[e.node1]) + (drawableNodes[e.node1].Width / 2);
+                        var y1 = Canvas.GetTop(drawableNodes[e.node1]) + (drawableNodes[e.node1].Height / 2);
                         edge.X1 = x1;
                         edge.Y1 = y1;
-                        var x2 = Canvas.GetLeft(drawableNodes[e.node2.data]) + (drawableNodes[e.node2.data].Width / 2);
-                        var y2 = Canvas.GetTop(drawableNodes[e.node2.data]) + (drawableNodes[e.node2.data].Height / 2);
+                        var x2 = Canvas.GetLeft(drawableNodes[e.node2]) + (drawableNodes[e.node2].Width / 2);
+                        var y2 = Canvas.GetTop(drawableNodes[e.node2]) + (drawableNodes[e.node2].Height / 2);
                         edge.X2 = x2;
                         edge.Y2 = y2;
 
@@ -430,18 +463,18 @@ namespace MSTapplication
                 textbox.Margin = new Thickness(5);
 
                 var n = e.node1;
-                button.Name = n.data;
+                button.Name = n;
                 
 
-                if (e.node1 == node)
+                if (e.node1 == node.data)
                 {
                     n = e.node2;
-                    button.Name = n.data;
+                    button.Name = n;
                 }
 
                 changeWeight.Add(button.Name, textbox);
 
-                label1.Content = "Node: " + n.data;
+                label1.Content = "Node: " + n;
                 label2.Content = "Weight: ";
 
                 //add elements to stack panels and listbox
@@ -528,11 +561,11 @@ namespace MSTapplication
             foreach (Edge e in v.neighbours)
             {
 
-                drawableEdges[e.data].X1 = Canvas.GetLeft(drawableNodes[e.node1.data]) + (drawableNodes[e.node1.data].Width/2);
-                drawableEdges[e.data].Y1 = Canvas.GetTop(drawableNodes[e.node1.data]) + (drawableNodes[e.node1.data].Height / 2);
+                drawableEdges[e.data].X1 = Canvas.GetLeft(drawableNodes[e.node1]) + (drawableNodes[e.node1].Width/2);
+                drawableEdges[e.data].Y1 = Canvas.GetTop(drawableNodes[e.node1]) + (drawableNodes[e.node1].Height / 2);
 
-                drawableEdges[e.data].X2 = Canvas.GetLeft(drawableNodes[e.node2.data]) + (drawableNodes[e.node2.data].Width / 2);
-                drawableEdges[e.data].Y2 = Canvas.GetTop(drawableNodes[e.node2.data]) + (drawableNodes[e.node2.data].Height / 2);
+                drawableEdges[e.data].X2 = Canvas.GetLeft(drawableNodes[e.node2]) + (drawableNodes[e.node2].Width / 2);
+                drawableEdges[e.data].Y2 = Canvas.GetTop(drawableNodes[e.node2]) + (drawableNodes[e.node2].Height / 2);
 
             }
             
