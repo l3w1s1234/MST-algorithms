@@ -12,6 +12,8 @@
             <MenuItem Header="File">
                 <MenuItem x:Name="saveGraph" Header="Save Graph" Click="saveGraph_Click"/>
                 <MenuItem  x:Name="loadGraph" Header="Load Graph" Click="loadGraph_Click"/>
+                <MenuItem x:Name="saveCoordinates" Header="Save Coordinates" Click="saveCoor_Click"/>
+                <MenuItem  x:Name="loadCoordinates" Header="Load Coordinates" Click="loadCoor_Click"/>
             </MenuItem>
             <MenuItem Header="View" >
                 <MenuItem x:Name="gmap" Header="Gmap" IsCheckable="true" Checked="gmap_Checked" Unchecked="gmap_Unchecked"/>

@@ -102,12 +102,13 @@ namespace MSTapplication
 
             Application.Current.Shutdown();
         }
-
+    
+        //for saving graph data
         private void saveGraph_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog save= new SaveFileDialog();
             save.Filter = "Graph Data|*.dat|Json|*.json";
-            save.Title = "Save a Text File";
+            save.Title = "Save Graph Data";
             save.ShowDialog();
             
             if (save.FileName != "" && mainGraph != null)
@@ -139,6 +140,36 @@ namespace MSTapplication
                 }
             }
             
+        }
+
+        //for saving graph coordinates
+        private void saveCoor_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.Filter = "Graph Coordinates|*.txt";
+            save.Title = "Save a Graph Coordinates";
+            save.ShowDialog();
+
+            if (save.FileName != "" && mainGraph != null)
+            {
+
+                try
+                {
+                    StreamWriter sw = new StreamWriter(save.OpenFile());
+                   foreach(KeyValuePair<string,Ellipse> kvp in drawableNodes)
+                    {
+                        var x = Canvas.GetLeft(kvp.Value);
+                        var y = Canvas.GetTop(kvp.Value);
+                        sw.WriteLine(kvp.Key + "," + x + "," + y);
+                    }
+                    sw.Close();
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine("Save failed");
+                }
+            }
+
         }
 
         //load graph data
@@ -189,6 +220,50 @@ namespace MSTapplication
                     {
                         System.Diagnostics.Debug.WriteLine("Load failed");
                     }
+                }
+
+            }
+        }
+
+        //load coordiunate data
+        private void loadCoor_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Filter = "Graph Coordinate|*.txt";
+            openFile.Title = "Open Graph coordinates";
+            openFile.ShowDialog();
+
+            //if the file name isnt empty try reading the file
+            if (openFile.FileName != "")
+            {
+
+                try
+                {
+                    using (var sr = new StreamReader(openFile.OpenFile()))
+                    {
+                        string line;
+                        while ((line = sr.ReadLine()) != null)
+                        {
+                            string[] words = line.Split(',');
+
+                            var x = double.Parse(words[1]);
+                            var y = double.Parse(words[2]);
+
+                            //change the coordinates of the nodes
+                            drawableNodes[words[0]].SetValue(Canvas.LeftProperty, x);
+                            drawableNodes[words[0]].SetValue(Canvas.TopProperty, y);
+                        }
+                    }
+
+                    //change the edges coordinates
+                    foreach (Vertex n in mainGraph.GetVertices())
+                    {
+                        updateEdge(n);
+                    }
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine("Load failed");
                 }
 
             }
@@ -264,28 +339,17 @@ namespace MSTapplication
                 {
                     if (!drawableEdges.ContainsKey(e.data))
                     {
-                        Line edge = new Line();
-
-
-                        edge.Stroke = Brushes.Black;
-
+  
                         var x1 = Canvas.GetLeft(drawableNodes[e.node1]) + (drawableNodes[e.node1].Width / 2);
                         var y1 = Canvas.GetTop(drawableNodes[e.node1]) + (drawableNodes[e.node1].Height / 2);
-                        edge.X1 = x1;
-                        edge.Y1 = y1;
                         var x2 = Canvas.GetLeft(drawableNodes[e.node2]) + (drawableNodes[e.node2].Width / 2);
                         var y2 = Canvas.GetTop(drawableNodes[e.node2]) + (drawableNodes[e.node2].Height / 2);
-                        edge.X2 = x2;
-                        edge.Y2 = y2;
 
-                        edge.StrokeThickness = 2;
+                        var edge = getEdge(x1, y1, x2, y2);
 
                         edge.Name = e.data;
 
-                        drawableEdges.Add(edge.Name, edge);
-                        incrementID(ref edgeID);
-
-
+                        drawableEdges.Add(e.data, edge);
                         display.Children.Add(edge);
                     }
                 }
@@ -317,6 +381,22 @@ namespace MSTapplication
             }
             i++;
             edgeID = "_" + i.ToString();
+        }
+    
+        //get an edge made with xy coor
+        private Line getEdge(double x1, double y1, double x2, double y2)
+        {
+            Line edge = new Line();
+
+            edge.Stroke = Brushes.Black;
+            edge.X1 = x1;
+            edge.Y1 = y1;
+            edge.X2 = x2;
+            edge.Y2 = y2;
+            edge.StrokeThickness = 2;
+
+            return edge;
+            
         }
         //when node button is pressed
         private void nodeButton_Click(object sender, RoutedEventArgs e)
