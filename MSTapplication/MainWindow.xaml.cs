@@ -20,6 +20,7 @@ using System.IO;
 using System.Xml.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
+using ClassicAlgorithms;
 
 namespace MSTapplication
 {
@@ -30,10 +31,11 @@ namespace MSTapplication
     
 {
         //name of the graph
-        Graph mainGraph = new Graph(); 
+        Graph mainGraph = new Graph();
+        classicAlgorithms ca = new classicAlgorithms();
 
         Gmap_Window window = new Gmap_Window();
-
+        
         //checkers
         private bool placeNode = false;
 
@@ -46,6 +48,10 @@ namespace MSTapplication
         //makes manipulation of shapes easier, allows to keep track of theses things
         private Dictionary<String,Line> drawableEdges = new Dictionary<String, Line>();
         private Dictionary<String,Ellipse> drawableNodes = new Dictionary<String, Ellipse>();
+
+        private Dictionary<String, Label> edgeWeights = new Dictionary<String, Label>();
+        private Dictionary<String, Label> nodeNames = new Dictionary<String, Label>();
+
         private Dictionary<String, TextBox> changeWeight = new Dictionary<String, TextBox>();
 
         //used to identify the shapes and what they are linked to on the Graph
@@ -59,6 +65,28 @@ namespace MSTapplication
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void boruvka_Click(object sender, RoutedEventArgs e)
+        {
+            SolidColorBrush solidColorBrush = new SolidColorBrush();
+            solidColorBrush.Color = Color.FromRgb(255, 255, 0);
+            Graph mst = null;
+
+            //as long as there are edges perform algorithm
+            if (mainGraph.GetEdges().Count != 0)
+            {
+                mst = ca.boruvka(ref mainGraph);
+
+                //colour the edges
+                foreach (Vertex v in mst.GetVertices())
+                {
+                    foreach (Edge edge in v.neighbours)
+                    {
+                        drawableEdges[edge.data].Stroke = solidColorBrush;
+                    }
+                }
+            }
         }
 
         //used to change id for nodes
@@ -86,6 +114,7 @@ namespace MSTapplication
 
             return i;      
         }
+
         private void gmap_Checked(object sender, RoutedEventArgs e)
         {
             window = new Gmap_Window();
@@ -298,6 +327,13 @@ namespace MSTapplication
             {
                 
                 Ellipse nodeEllipse = new Ellipse();
+
+                Label nodeName = new Label();
+
+                nodeName.Name = node.data;
+                nodeName.Content = node.data;
+                nodeName.FontSize = 10;
+
                 SolidColorBrush solidColorBrush = new SolidColorBrush();
 
                 solidColorBrush.Color = Color.FromRgb(255, 0, 0);
@@ -315,10 +351,14 @@ namespace MSTapplication
                 nodeEllipse.SetValue(Canvas.LeftProperty, x - (nodeEllipse.Width / 2));
                 nodeEllipse.SetValue(Canvas.TopProperty, y - (nodeEllipse.Height / 2));
 
-                
+                nodeName.SetValue(Canvas.LeftProperty, x - (nodeEllipse.Width+5));
+                nodeName.SetValue(Canvas.TopProperty, y - nodeEllipse.Height);
+
                 drawableNodes.Add(node.data, nodeEllipse);
+                nodeNames.Add(node.data, nodeName);
 
                 nodeEllipse.Name = node.data;
+
                 
 
                 //adding event handler for mouse controls
@@ -329,7 +369,9 @@ namespace MSTapplication
                 nodeEllipse.MouseLeave += new MouseEventHandler(nodeEllipse_MouseLeave);
                 nodeEllipse.MouseMove += new MouseEventHandler(nodeEllipse_MouseMove);
 
+                //add to canvas
                 display.Children.Add(nodeEllipse);
+                display.Children.Add(nodeName);
 
             }
             //draw edges
@@ -398,6 +440,7 @@ namespace MSTapplication
             return edge;
             
         }
+       
         //when node button is pressed
         private void nodeButton_Click(object sender, RoutedEventArgs e)
         {
@@ -426,7 +469,7 @@ namespace MSTapplication
                 float weight = float.Parse(Weight.Text);
 
                 //check edge doesnt exist and then add to graph and draw
-                if(!node1.hasNeighbour(node2))
+                if(!node1.hasNeighbour(node2.data))
                 {
                     var x1 = Canvas.GetLeft(drawableNodes[node1.data]) + (drawableNodes[node1.data].Width / 2);
                     var y1 = Canvas.GetTop(drawableNodes[node1.data]) + (drawableNodes[node1.data].Height / 2);
@@ -486,7 +529,13 @@ namespace MSTapplication
         {
             Ellipse nodeEllipse = new Ellipse();
             SolidColorBrush solidColorBrush = new SolidColorBrush();
-            
+
+
+            Label nodeName = new Label();
+            nodeName.Name = nodeID;
+            nodeName.Content = nodeID;
+            nodeName.FontSize = 10;
+
             solidColorBrush.Color = Color.FromRgb(255,0,0);
             
             nodeEllipse.Fill = solidColorBrush;
@@ -502,9 +551,13 @@ namespace MSTapplication
             nodeEllipse.SetValue(Canvas.LeftProperty, x - (nodeEllipse.Width / 2));
             nodeEllipse.SetValue(Canvas.TopProperty, y - (nodeEllipse.Height / 2));
 
+            nodeName.SetValue(Canvas.LeftProperty, x - (nodeEllipse.Width+5));
+            nodeName.SetValue(Canvas.TopProperty, y - nodeEllipse.Height);
+
             //add to graph
             mainGraph.addNode(nodeID);
             drawableNodes.Add(nodeID, nodeEllipse);
+            nodeNames.Add(nodeID, nodeName);
 
             nodeEllipse.Name = nodeID;
             incrementID(ref nodeID);
@@ -518,8 +571,8 @@ namespace MSTapplication
             nodeEllipse.MouseMove += new MouseEventHandler(nodeEllipse_MouseMove);
 
             display.Children.Add(nodeEllipse);
+            display.Children.Add(nodeName);
 
-            
         }
 
         //display the neigbours within the node and weights
@@ -624,10 +677,13 @@ namespace MSTapplication
             //keep element within canvas
             if (!display.IsMouseOver)
             {
-                ellipse.SetValue(Canvas.LeftProperty, originalPosition.X - (ellipse.Width / 2));
-                ellipse.SetValue(Canvas.TopProperty, originalPosition.Y - (ellipse.Height / 2));
+                ellipse.SetValue(Canvas.LeftProperty, originalPosition.X - (ellipse.Width+5));
+                ellipse.SetValue(Canvas.TopProperty, originalPosition.Y - ellipse.Height);
 
                 var node = mainGraph.GetVertex(ellipse.Name);
+
+                nodeName.SetValue(Canvas.LeftProperty, originalPosition.X - ellipse.Width);
+                nodeName.SetValue(Canvas.TopProperty, originalPosition.Y - ellipse.Height);
 
                 updateEdge(node);
             }
@@ -671,8 +727,11 @@ namespace MSTapplication
             //update node in graph
             var node = mainGraph.GetVertex(ellipse.Name);
 
+            nodeNames[ellipse.Name].SetValue(Canvas.LeftProperty, left - (ellipse.Width +4));
+            nodeNames[ellipse.Name].SetValue(Canvas.TopProperty, top - ellipse.Height);
+
             //check that there are any connected edges and update their postion
-            if(node.hasNeighbours())
+            if (node.hasNeighbours())
             {
                 updateEdge(node);
             }
@@ -687,18 +746,23 @@ namespace MSTapplication
         {
             Ellipse ellipse = sender as Ellipse;
             var edgeIDs = mainGraph.getEdgeIDs(ellipse.Name);
+            var nID = nodeNames[ellipse.Name];
 
+            
             //remove from all arrays
             mainGraph.removeEdges(ellipse.Name);
+            mainGraph.removeVertex(ellipse.Name);
             drawableNodes.Remove(ellipse.Name);
+            nodeNames.Remove(ellipse.Name);
+
             foreach(String edge in edgeIDs)
             {
                 display.Children.Remove(drawableEdges[edge]);
                 drawableEdges.Remove(edge); 
             }
-
-            display.Children.Remove(ellipse);
             
+            display.Children.Remove(ellipse);
+            display.Children.Remove(nID);
 
             
         }
@@ -768,8 +832,9 @@ namespace MSTapplication
                //set left and top
                 Canvas.SetLeft(element.Value, old_Left * scale_Width);
                 Canvas.SetTop(element.Value, old_Top * scale_Height );
+                nodeNames[element.Value.Name].SetValue(Canvas.LeftProperty, old_Left * scale_Width);
+                nodeNames[element.Value.Name].SetValue(Canvas.TopProperty, old_Top * scale_Height);
 
-                
             }
 
             //update lines/edges

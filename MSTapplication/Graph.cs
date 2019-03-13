@@ -11,7 +11,8 @@ namespace simpleGraph
     [Serializable()]
     class Graph : ISerializable
     {
-        private Dictionary<string, Vertex> nodes ;
+        private Dictionary<string, Vertex> nodes;
+        public int edges = 0;
 
         public Graph()
         {
@@ -25,10 +26,43 @@ namespace simpleGraph
             nodes.Add(name, node);
         }
 
+        //add a node by Vertex
+        public void insertNode(Vertex v)
+        {
+            try
+            {
+                nodes.Add(v.data, v);
+            }
+            catch
+            {
+                System.Diagnostics.Debug.WriteLine("Node with same key already exists");
+            }
+            
+        }
+
         //get thew vertex when given a key
         public Vertex GetVertex(String id)
         {
             return nodes[id];
+        }
+
+        //check that graph contains a list of vertices
+        public bool containsVertices(List<Vertex> vertices)
+        {
+            foreach(Vertex v in vertices)
+            {
+                if (!nodes.ContainsKey(v.data)) return false;
+            }
+            return true;
+        }
+        //returns a random vertex
+        public Vertex getRandomVertex()
+        {
+            Random rand = new Random();
+
+            var i = rand.Next(0, nodes.Count);
+
+            return nodes.Values.ElementAt(i);
         }
 
         //get a list of all nodes in 
@@ -43,14 +77,53 @@ namespace simpleGraph
             return vertices;
         }
 
+        //get all the edges within the graph
+        public List<Edge> GetEdges()
+        {
+            var edgeList = new List<Edge>();
+            bool containsItem = false;
+            //get all the edges
+            foreach (KeyValuePair<string, Vertex> kvp in nodes)
+            {
+                foreach (Edge e in kvp.Value.neighbours)
+                {
+                    if (edgeList.Count == 0)
+                    {
+                        edgeList.Add(e);
+                    }
+                    else
+                    {
+                        foreach(Edge e2 in edgeList)
+                        {
+                            if(e2.data == e.data)
+                            {
+                                containsItem = true;
+                            }
+                        }
+                        if(containsItem == false)
+                        {
+                            edgeList.Add(e);
+                        }
+                    }
+                    containsItem = false;
+                }
+
+            }
+
+            return edgeList;
+        }
+
+        
+
         //add edge to nodes by using the name of both nodes
         public void addEdge(float weight, String n1ID, String n2ID, String id)
         {
             var n1 = nodes[n1ID];
             var n2 = nodes[n2ID];
             Edge edge = new Edge(n1.data, n2.data, weight,id);
-            n1.addNeighbour(ref edge);
-            n2.addNeighbour(ref edge);
+            n1.addNeighbour(edge);
+            n2.addNeighbour(edge);
+            edges++;
         }
 
         //get all the ids for the edges the node is connected to
@@ -67,6 +140,24 @@ namespace simpleGraph
             return edgeIDs;
         }
 
+
+        //check that vertex exists
+        public bool hasVertex(string nodeID)
+        {
+            if(nodes.ContainsKey(nodeID))
+            {
+                return true;
+            }
+            return false;
+        }
+        
+        //remove Vertex
+        public void removeVertex(string nID)
+        {
+            if (nodes.ContainsKey(nID)) nodes.Remove(nID);
+        }
+        
+        
         //remove all edges in the called vertex
         public void removeEdges(String nodeID)
         {
@@ -78,14 +169,16 @@ namespace simpleGraph
                 if(e.node1 == node.data)
                 {
                   nodes[e.node2].removeEdge(e.data);
+                    edges--;
                 }
                 else
                 {
                     nodes[e.node1].removeEdge(e.data);
+                    edges--;
                 }
             }
             node.neighbours.Clear();
-
+            
         }
 
         //remove called edge in the called vertex
@@ -96,7 +189,7 @@ namespace simpleGraph
             node.removeEdge(edgeID);
         }
 
-        //used to add another graphs nodes to the graphs
+        //used to add another graphs nodes to the graph
         public void mergeGraph(Graph graph)
         {
             foreach (KeyValuePair<string, Vertex> n in graph.nodes)
@@ -113,11 +206,13 @@ namespace simpleGraph
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("Nodes", nodes);
+            info.AddValue("Edges", edges);
         }
 
         public Graph(SerializationInfo info, StreamingContext context)
         {
             nodes = (Dictionary<string, Vertex>)info.GetValue("Nodes", typeof(Dictionary<string, Vertex>));
+            edges = (int)info.GetValue("Edges", typeof(int));
         }
     }
 }

@@ -63,6 +63,11 @@
                         <Label Content="Neighbours:" />
                         <ListBox x:Name="nodeNeighbours" Margin="10"> </ListBox>
 
+                        <Label Content="Algorithms:" />
+                        <ListBox x:Name="algorihtms" Margin="10">
+                            <Button x:Name="boruvka" Content="Boruvka" Margin="5" Click="boruvka_Click"/>
+                        </ListBox>
+
                     </StackPanel>
                 </ScrollViewer>
             </Border>

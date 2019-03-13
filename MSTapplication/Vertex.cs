@@ -36,17 +36,17 @@ namespace simpleGraph
         }
 
         //add a neighbour to list
-        public void addNeighbour(ref Edge edge)
+        public void addNeighbour(Edge edge)
         {
             neighbours.AddFirst(edge);
         }
 
         //returns true or false if node is a neighour
-        public Boolean hasNeighbour(Vertex n)
+        public Boolean hasNeighbour(string n)
         {
             foreach(Edge e in neighbours)
             {
-                if(e.node1 == n.data || e.node2 == n.data)
+                if(e.node1 == n || e.node2 == n)
                 {
                     return true;
                 }
