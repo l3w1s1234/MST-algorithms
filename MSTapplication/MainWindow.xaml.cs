@@ -281,6 +281,9 @@ namespace MSTapplication
                             //change the coordinates of the nodes
                             drawableNodes[words[0]].SetValue(Canvas.LeftProperty, x);
                             drawableNodes[words[0]].SetValue(Canvas.TopProperty, y);
+
+                            nodeNames[words[0]].SetValue(Canvas.LeftProperty, x - (drawableNodes[words[0]].Width + 10));
+                            nodeNames[words[0]].SetValue(Canvas.TopProperty, y - drawableNodes[words[0]].Height);
                         }
                     }
 
@@ -302,17 +305,12 @@ namespace MSTapplication
         private void clearGraph()
         {
             //clear all
-            mainGraph = null;
-            foreach (KeyValuePair<string, Line> key in drawableEdges)
-            {
-                display.Children.Remove(key.Value);
-            }
-            foreach (KeyValuePair<string, Ellipse> key in drawableNodes)
-            {
-                display.Children.Remove(key.Value);
-            }
+            mainGraph = null;          
+            display.Children.Clear();
             drawableEdges.Clear();
             drawableNodes.Clear();
+            nodeNames.Clear();
+            edgeWeights.Clear();
             nodeID = "_0";
             edgeID = "_0";
         }
@@ -374,6 +372,7 @@ namespace MSTapplication
                 display.Children.Add(nodeName);
 
             }
+
             //draw edges
             foreach (Vertex node in mainGraph.GetVertices())
             {
@@ -381,7 +380,12 @@ namespace MSTapplication
                 {
                     if (!drawableEdges.ContainsKey(e.data))
                     {
-  
+                        Label weight = new Label();
+
+                        weight.Name = e.data;
+                        weight.Content = e.weight;
+                        weight.FontSize = 10;
+                        
                         var x1 = Canvas.GetLeft(drawableNodes[e.node1]) + (drawableNodes[e.node1].Width / 2);
                         var y1 = Canvas.GetTop(drawableNodes[e.node1]) + (drawableNodes[e.node1].Height / 2);
                         var x2 = Canvas.GetLeft(drawableNodes[e.node2]) + (drawableNodes[e.node2].Width / 2);
@@ -389,9 +393,13 @@ namespace MSTapplication
 
                         var edge = getEdge(x1, y1, x2, y2);
 
+                        weight.SetValue(Canvas.LeftProperty, (x1 + x2) / 2);
+                        weight.SetValue(Canvas.TopProperty, ((y1 + y2) / 2)-5);
                         edge.Name = e.data;
 
+                        edgeWeights.Add(e.data, weight);
                         drawableEdges.Add(e.data, edge);
+                        display.Children.Add(weight);
                         display.Children.Add(edge);
                     }
                 }
@@ -478,7 +486,7 @@ namespace MSTapplication
                     var y2 = Canvas.GetTop(drawableNodes[node2.data]) + (drawableNodes[node2.data].Height / 2);
 
                     mainGraph.addEdge(weight, node1.data, node2.data,edgeID);
-                    drawEdge(x1,y1,x2,y2);
+                    drawEdge(x1,y1,x2,y2,weight.ToString());
                 }
                 
             }
@@ -500,10 +508,9 @@ namespace MSTapplication
         }
 
         //draw Edge
-        private void drawEdge(double x1, double y1, double x2, double y2)
+        private void drawEdge(double x1, double y1, double x2, double y2,string w)
         {
             Line edge = new Line();
-            
 
             edge.Stroke = Brushes.Black;
 
@@ -516,11 +523,22 @@ namespace MSTapplication
 
             edge.Name=edgeID;
 
+            Label weight = new Label();
+            weight.Name = edge.Name;
+            weight.Content = w;
+            weight.FontSize = 10;
+
+            weight.SetValue(Canvas.LeftProperty, (x1 + x2) / 2);
+            weight.SetValue(Canvas.TopProperty, ((y1 + y2) / 2) - 5);
+            
+
+            edgeWeights.Add(edge.Name, weight);
             drawableEdges.Add(edge.Name, edge);
             incrementID(ref edgeID);
 
 
             display.Children.Add(edge);
+            display.Children.Add(weight);
         }
 
 
@@ -703,6 +721,9 @@ namespace MSTapplication
                 drawableEdges[e.data].X2 = Canvas.GetLeft(drawableNodes[e.node2]) + (drawableNodes[e.node2].Width / 2);
                 drawableEdges[e.data].Y2 = Canvas.GetTop(drawableNodes[e.node2]) + (drawableNodes[e.node2].Height / 2);
 
+
+                edgeWeights[e.data].SetValue(Canvas.LeftProperty, (drawableEdges[e.data].X1 + drawableEdges[e.data].X2) / 2);
+                edgeWeights[e.data].SetValue(Canvas.TopProperty, ((drawableEdges[e.data].Y1 + drawableEdges[e.data].Y2) / 2) - 5);
             }
             
             
@@ -758,7 +779,9 @@ namespace MSTapplication
             foreach(String edge in edgeIDs)
             {
                 display.Children.Remove(drawableEdges[edge]);
-                drawableEdges.Remove(edge); 
+                display.Children.Remove(edgeWeights[edge]);
+                drawableEdges.Remove(edge);
+                edgeWeights.Remove(edge);
             }
             
             display.Children.Remove(ellipse);
