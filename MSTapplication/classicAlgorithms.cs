@@ -49,7 +49,7 @@ namespace ClassicAlgorithms
                             //check that the edge isnt already contained within the graph and compare weight
                             if (v.data == edge.node1)
                             {
-                                if (!v.hasNeighbour(edge.node2))
+                                if (!v.hasEdge(edge.data))
                                 {
                                     if (minEdge.weight > edge.weight)
                                     {
@@ -61,7 +61,7 @@ namespace ClassicAlgorithms
                             }
                             else if (v.data == edge.node2)
                             {
-                                if (!v.hasNeighbour(edge.node1))
+                                if (!v.hasEdge(edge.data))
                                 {
                                     if (minEdge.weight > edge.weight)
                                     {
@@ -82,8 +82,11 @@ namespace ClassicAlgorithms
                             {
                                 graph.addNode(minEdge.node2);
                             }
-                            graph.GetVertex(minEdge.node2).addNeighbour(minEdge);
-                            graph.GetVertex(minEdge.node1).addNeighbour(minEdge);
+                            if(!graph.GetVertex(minEdge.node1).hasEdge(minEdge.data))
+                                {
+                                graph.addEdge(minEdge.weight,minEdge.node1,minEdge.node2,minEdge.data);
+                                }
+                            
                         }
                         else if (graph.hasVertex(minEdge.node2))
                         {
@@ -91,8 +94,11 @@ namespace ClassicAlgorithms
                             {
                                 graph.addNode(minEdge.node1);
                             }
-                            graph.GetVertex(minEdge.node2).addNeighbour(minEdge);
-                            graph.GetVertex(minEdge.node1).addNeighbour(minEdge);
+                            if(!graph.GetVertex(minEdge.node2).hasEdge(minEdge.data))
+                                {
+                                graph.addEdge(minEdge.weight,minEdge.node1,minEdge.node2,minEdge.data);
+                                }
+                            
                         }
                     }
                     
@@ -101,8 +107,14 @@ namespace ClassicAlgorithms
                 }
 
 
-                //merge components that are connected to each other
+                
+                //merge components if there are 2 left
+                if (components.Count == 2)
+                {
+                    components[0].mergeGraph(components[1]);
+                }
                 int prevComp = components.Count - 1;
+                //merge components that are connected to each other
                 while (prevComp > 0)
                 {
                     

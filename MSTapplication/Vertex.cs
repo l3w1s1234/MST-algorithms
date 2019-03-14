@@ -38,6 +38,7 @@ namespace simpleGraph
         //add a neighbour to list
         public void addNeighbour(Edge edge)
         {
+            
             neighbours.AddFirst(edge);
         }
 
@@ -53,6 +54,20 @@ namespace simpleGraph
             }
             return false;
         }
+
+        //returns if edge already exits
+        public Boolean hasEdge(string eID)
+         {
+
+            foreach(Edge e in neighbours)
+            {
+                if(e.data == eID)
+                {
+                    return true;
+                }
+            }
+            return false;
+         }
 
         //returns true or false if node is any neighour
         public Boolean hasNeighbours()
@@ -72,20 +87,32 @@ namespace simpleGraph
             return neighbours;
         }
 
-        
+        //get the edge with the edge ID
+        public Edge getEdge(string eID)
+            {
+            Edge edge = null;
+            foreach(Edge e in neighbours)
+                {
+                if(e.data == eID)
+                    {
+                       edge = e;
+                    }
+                }
+            return edge;
+            }
 
         //remove an edge from the list
         public void removeEdge(String edgeID)
         {
             try
             {
-                foreach (Edge e in neighbours)
-                {
-                    if (e.data == edgeID)
+               var edge = getEdge(edgeID);
+                if(edge!= null)
                     {
-                        neighbours.Remove(e);
+                    neighbours.Remove(edge);
                     }
-                }
+                   
+                
             }
             catch
             {
