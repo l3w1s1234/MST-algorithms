@@ -18,7 +18,6 @@ namespace ClassicAlgorithms
         //execute the boruvka algorithm and returns mst
         public Graph boruvka(ref Graph g)
         {
-            Graph mst = new Graph();
             List<Graph> components = new List<Graph>();
 
             //set up each component with single vertices
@@ -143,8 +142,8 @@ namespace ClassicAlgorithms
                 }
             }
             components[0].edges = components[0].GetEdges().Count;
-            mst = components[0];
-            return mst;
+           
+            return components[0];
         }
 
 
