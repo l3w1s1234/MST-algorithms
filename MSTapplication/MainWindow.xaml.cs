@@ -651,6 +651,8 @@ namespace MSTapplication
             try
             {
                 node.setNeighbourWeight(ref node, float.Parse(tb.Text));
+                var edge = node.getNeighbourEdge(node.data);
+                edgeWeights[edge.data].Content = edge.weight;
             }
             catch
             {
@@ -855,8 +857,8 @@ namespace MSTapplication
                //set left and top
                 Canvas.SetLeft(element.Value, old_Left * scale_Width);
                 Canvas.SetTop(element.Value, old_Top * scale_Height );
-                nodeNames[element.Value.Name].SetValue(Canvas.LeftProperty, old_Left * scale_Width);
-                nodeNames[element.Value.Name].SetValue(Canvas.TopProperty, old_Top * scale_Height);
+                nodeNames[element.Value.Name].SetValue(Canvas.LeftProperty, (old_Left * scale_Width) - (element.Value.Width + 4));
+                nodeNames[element.Value.Name].SetValue(Canvas.TopProperty, (old_Top * scale_Height)-element.Value.Height);
 
             }
 

@@ -35,6 +35,20 @@ namespace simpleGraph
                 }
         }
 
+        public Edge getNeighbourEdge(string nID)
+        {
+            Edge edge = null;
+            foreach (Edge e in neighbours)
+            {
+                if (e.node1 == nID|| e.node2 == nID)
+                {
+                    edge = e;
+                }
+            }
+
+            return edge;
+        }
+
         //add a neighbour to list
         public void addNeighbour(Edge edge)
         {
