@@ -93,7 +93,7 @@ namespace MSTapplication
         private void incrementID(ref string s)
         {
             int i = 0;
-            String number = Regex.Match(s, @"\d").ToString();
+            String number = Regex.Match(s, @"\d+").ToString();
 
             try { Int32.TryParse(number, out i);
                 i++;
