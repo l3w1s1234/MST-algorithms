@@ -181,6 +181,17 @@ namespace simpleGraph
             
         }
 
+        public bool hasEdge(Edge e)
+        {
+            if(nodes.ContainsKey(e.node1))
+            {
+                if (nodes[e.node1].hasEdge(e.data)) return true;
+            }
+            
+
+            return false;
+        }
+
         //remove called edge in the called vertex
         public void removeEdge(String nodeID, String edgeID)
         {
