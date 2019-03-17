@@ -134,10 +134,30 @@ namespace ClassicAlgorithms
                         
                     }
 
-                   
                      prevComp--;
-                    
-                    
+
+                }
+            }
+
+            //check that there are no more than 2 edges connected to 1 node
+            foreach (Vertex n in components[0].GetVertices())
+            {
+                if (n.neighbours.Count > 2)
+                {
+                    Edge maxEdge = null;
+                    while(n.neighbours.Count > 2)
+                    {
+                        foreach(Edge e in n.neighbours)
+                        {
+                            if (maxEdge == null) maxEdge = e;
+                            else if(maxEdge.weight < e.weight)
+                            {
+                                maxEdge = e;
+                            }
+
+                        }
+                        n.neighbours.Remove(maxEdge);
+                    }
 
                 }
             }
