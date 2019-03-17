@@ -21,6 +21,7 @@ using System.Xml.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
 using ClassicAlgorithms;
+using GA;
 
 namespace MSTapplication
 {
@@ -86,6 +87,10 @@ namespace MSTapplication
                         drawableEdges[edge.data].Stroke = solidColorBrush;
                     }
                 }
+
+                //show mst weight
+                mstWeight.Content = mst.getGraphWeight();
+
             }
         }
 
@@ -252,6 +257,8 @@ namespace MSTapplication
                 }
 
             }
+
+            graphWeight.Content = mainGraph.getGraphWeight();
         }
 
         //load coordiunate data
@@ -313,6 +320,7 @@ namespace MSTapplication
             edgeWeights.Clear();
             nodeID = "_0";
             edgeID = "_0";
+            graphWeight.Content = "0";
         }
 
         //randomly generate the graph placement on the graph display
@@ -488,7 +496,7 @@ namespace MSTapplication
                     mainGraph.addEdge(weight, node1.data, node2.data,edgeID);
                     drawEdge(x1,y1,x2,y2,weight.ToString());
                 }
-                
+                graphWeight.Content = mainGraph.getGraphWeight();
             }
             catch
             {
@@ -658,8 +666,8 @@ namespace MSTapplication
             {
                 System.Diagnostics.Debug.WriteLine("Changing Weight Failed");
             }
-            
 
+            graphWeight.Content = mainGraph.getGraphWeight();
 
         }
 
@@ -785,7 +793,9 @@ namespace MSTapplication
                 drawableEdges.Remove(edge);
                 edgeWeights.Remove(edge);
             }
-            
+
+            graphWeight.Content = mainGraph.getGraphWeight();
+
             display.Children.Remove(ellipse);
             display.Children.Remove(nID);
 

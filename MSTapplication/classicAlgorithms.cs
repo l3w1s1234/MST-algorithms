@@ -186,7 +186,7 @@ namespace ClassicAlgorithms
         }
 
         //execute the boruvka algorithm
-        public void Astar(ref Graph g)
+        public void aStar(ref Graph g)
         {
 
         }

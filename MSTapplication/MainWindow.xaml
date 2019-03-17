@@ -20,7 +20,11 @@
                 <MenuItem Header="Charts" IsCheckable="true"/>
             </MenuItem>
         </Menu>
-        <ToolBar VerticalAlignment="Bottom" Background="#e6e6e6">
+        <ToolBar VerticalAlignment="Bottom" Background="#e6e6e6" >
+            <Label Content="Graph Weight: "></Label>
+            <Label x:Name="graphWeight" ></Label>
+            <Label Content="MST Weight:" ></Label>
+            <Label x:Name="mstWeight" ></Label>
         </ToolBar>
         <Grid>
             <Grid.ColumnDefinitions>

@@ -202,6 +202,19 @@ namespace simpleGraph
 
         }
 
+        //return the maximum weight of graph
+        public float getGraphWeight()
+        {
+            float weight = 0;
+            foreach(Edge e in this.GetEdges())
+            {
+                weight += e.weight;
+            }
+
+
+            return weight;
+        }
+
         //for serialization
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
