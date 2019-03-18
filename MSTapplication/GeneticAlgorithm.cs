@@ -287,7 +287,7 @@ namespace GA
 
             if(actualtree == true)
             {
-                fitness -= MaxFitness/2;
+                fitness = temp.getGraphWeight();
             }
         }
     }
