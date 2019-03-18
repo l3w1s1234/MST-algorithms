@@ -23,21 +23,27 @@ namespace GA
         Graph temp;
         public GeneticAlgorithm()
         {
-            population = new Population();
 
         }
 
         //run algorithm
         public Graph run(int k, ref Graph graph,int iterations)
         {
+            genCount = 0;
             temp = graph;
-            
-
+            population = new Population(); ;
             float graphMaxFitness = graph.getGraphWeight();
             population.init(k, ref graph, graphMaxFitness,rnd);
             Graph mst = null;
-            
-            float minFit = population.getFittest().getFitness();
+
+            if (strongest== null)
+            {
+                strongest = population.getFittest();
+            }
+            else if(strongest.getFitness() > population.getFittest().getFitness())
+            {
+                strongest = population.getFittest();
+            }
 
             //perform algorithm while fitness > target weight
             while (genCount < iterations)
@@ -70,11 +76,14 @@ namespace GA
 
                 
 
-                
+                if (strongest.getFitness() > fittest.getFitness())
+                {
+                    strongest = fittest;
+                }
             }
 
             //build mst
-            foreach(Edge e in population.getFittest().chromosome)
+            foreach(Edge e in strongest.chromosome)
             {
                 if (mst == null)
                 {
