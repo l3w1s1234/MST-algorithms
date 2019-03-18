@@ -121,7 +121,7 @@
     </ApplicationDefinition>
     <Compile Include="classicAlgorithms.cs" />
     <Compile Include="Edge.cs" />
-    <Compile Include="GeneticAgorithm.cs" />
+    <Compile Include="GeneticAlgorithm.cs" />
     <Compile Include="Vertex.cs" />
     <Page Include="Gmap_Window.xaml">
       <SubType>Designer</SubType>

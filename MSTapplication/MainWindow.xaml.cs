@@ -34,6 +34,7 @@ namespace MSTapplication
         //name of the graph
         Graph mainGraph = new Graph();
         classicAlgorithms ca = new classicAlgorithms();
+        GeneticAlgorithm ga = new GeneticAlgorithm();
 
         Gmap_Window window = new Gmap_Window();
         
@@ -68,8 +69,60 @@ namespace MSTapplication
             InitializeComponent();
         }
 
-        private void boruvka_Click(object sender, RoutedEventArgs e)
+        //perform ga on graph
+        private void Ga_Click(object sender, RoutedEventArgs e)
         {
+            SolidColorBrush black = new SolidColorBrush();
+            black.Color = Color.FromRgb(0, 0, 0);
+            foreach (KeyValuePair<string,Line> kvp in drawableEdges)
+            {
+                kvp.Value.Stroke = black;
+            }
+
+            SolidColorBrush solidColorBrush = new SolidColorBrush();
+            solidColorBrush.Color = Color.FromRgb(255, 255, 0);
+            Graph mst = null;
+
+            //as long as there are edges perform algorithm
+            if (mainGraph.GetEdges().Count != 0)
+            {
+                
+                try
+                {
+                    mst = ga.run(int.Parse(popSize.Text), ref mainGraph, int.Parse(iterations.Text));
+                    //colour the edges
+                    foreach (Vertex v in mst.GetVertices())
+                    {
+                        foreach (Edge edge in v.neighbours)
+                        {
+                            drawableEdges[edge.data].Stroke = solidColorBrush;
+                        }
+                    }
+
+                    //show mst weight
+                    mstWeight.Content = mst.getGraphWeight();
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine("Failed starting algorithm");
+                }
+                
+
+               
+
+
+            }
+        }
+
+            private void boruvka_Click(object sender, RoutedEventArgs e)
+        {
+            SolidColorBrush black = new SolidColorBrush();
+            black.Color = Color.FromRgb(0, 0, 0);
+            foreach (KeyValuePair<string, Line> kvp in drawableEdges)
+            {
+                kvp.Value.Stroke = black;
+            }
+
             SolidColorBrush solidColorBrush = new SolidColorBrush();
             solidColorBrush.Color = Color.FromRgb(255, 255, 0);
             Graph mst = null;
@@ -880,7 +933,6 @@ namespace MSTapplication
             
         }
 
-
-
+      
     }
 }
