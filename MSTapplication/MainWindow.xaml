@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MSTapplication"
         mc:Ignorable="d"
-        Title="MST-Algorithms" Height="450" Width="800">
+        Title="MST-Algorithms" Height="450" Width="900">
     <Grid  Background="WhiteSmoke" x:Name="grid">
 
         <Menu x:Name="menu" VerticalAlignment="Top" Background="#e6e6e6">
@@ -86,6 +86,23 @@
                                 <Label Content="Iterations" Grid.Column="0" Grid.Row="1"></Label>
                                 <TextBox x:Name="iterations" Grid.Column="1" Grid.Row="1" Margin="5"></TextBox>
                                 <Button x:Name="GA" Content="Genetic Algorithm" Margin="5" Click="Ga_Click" Grid.Row="2"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="4*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="2*"/>
+                                    <RowDefinition Height="2*"/>
+                                    <RowDefinition Height="2*"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Content="Source" Grid.Column="0" Grid.Row="0"></Label>
+                                <TextBox x:Name="source" Grid.Column="1" Grid.Row="0"  Margin="5"></TextBox>
+                                <Label Content="Destination" Grid.Column="0" Grid.Row="1"></Label>
+                                <TextBox x:Name="destination" Grid.Column="1" Grid.Row="1" Margin="5"></TextBox>
+                                <Button x:Name="Dijkstra" Content="Dijkstra" Margin="5" Click="Dijkstra_Click" Grid.Row="2"/>
                             </Grid>
                             <Button x:Name="boruvka" Content="Boruvka" Margin="5" Click="boruvka_Click"/>
                         </ListBox>

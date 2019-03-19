@@ -35,7 +35,7 @@ namespace GA
             float graphMaxFitness = graph.getGraphWeight();
             population.init(k, ref graph, graphMaxFitness,rnd);
             Graph mst = null;
-
+            
             if (strongest== null)
             {
                 strongest = population.getFittest();
@@ -58,18 +58,19 @@ namespace GA
 
                 //do crossover
                 crossover();
-
+                //add the fittest offspring to population
+                addFittestOffspring();
+                population.calculateFitness();
 
                 //5% chance to mutate
                 if (rnd.Next(0,100) < 5)
                 {
                     mutation();
                 }
-
                 
 
-                //add the fittest offspring to population
-                addFittestOffspring();
+
+                
 
 
                 population.calculateFitness();

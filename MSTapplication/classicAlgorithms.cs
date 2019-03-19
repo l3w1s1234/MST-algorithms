@@ -168,9 +168,137 @@ namespace ClassicAlgorithms
 
 
         //execute the boruvka algorithm
-        public void djikstra(ref Graph g)
+        public Graph dijkstra(string src, string dest, ref Graph g)
         {
+            Graph mst = new Graph();
 
+            Dictionary<Vertex,bool> visitedNodes = new Dictionary<Vertex,bool>();
+            List<Edge> viableEdges = new List<Edge>();
+            Dictionary<Vertex,float> distances = new Dictionary<Vertex, float>();
+
+
+            bool reachedGoal = false;
+
+            
+            //check that the source and destination exists
+            if(g.hasVertex(src) && g.hasVertex(dest))
+            {
+                //add the source node has been visited and add its distance
+                visitedNodes.Add(g.GetVertex(src), true);
+                distances.Add(g.GetVertex(src), 0);
+                var currentNode = g.GetVertex(src);
+                var prevNode = g.GetVertex(src);
+
+                //set all nodes distances and mark unvisted
+                foreach(Vertex v in g.GetVertices())
+                {
+                    if (v.data != src)
+                    {
+                        distances.Add(v, float.MaxValue);
+                        visitedNodes.Add(v, false);
+                    }
+                    
+                    
+                }
+
+
+                
+
+                //while goal hasnt been reached try and get a suitable goal
+                while(!reachedGoal)
+                {
+                    //check that current node is goal
+                    if (currentNode.data == dest)
+                    {
+                        reachedGoal = true;
+                    }
+
+                    //check neighbours of current node
+                    foreach (Edge e in currentNode.neighbours)
+                    {
+                        //get weights and assign the tentative distance
+                        if(currentNode.data == e.node1)
+                        {
+                            if (e.weight < distances[g.GetVertex(e.node2)] && visitedNodes[g.GetVertex(e.node2)] == false)
+                            {
+                                distances[g.GetVertex(e.node2)] = e.weight + distances[currentNode];
+                            }
+
+                        }
+                        else
+                        {
+
+                            if (e.weight < distances[g.GetVertex(e.node1)] && visitedNodes[g.GetVertex(e.node1)] == false)
+                            {
+                                distances[g.GetVertex(e.node1)] = e.weight + distances[currentNode];
+                            }
+                        }
+
+
+                    }
+
+                    //change current node to visited
+                    if (visitedNodes[currentNode] == false)
+                    {
+                        visitedNodes[currentNode] = true;
+                    }
+
+                    prevNode = currentNode;
+
+                    //select next node to check
+                    foreach (KeyValuePair<Vertex,float>kvp in distances)
+                    {
+                        if(kvp.Value != float.MaxValue)//if it is not equal to infinity
+                        {
+                            if(kvp.Key != currentNode && visitedNodes[kvp.Key] == false && kvp.Value<distances[currentNode])
+                            {
+                                currentNode = kvp.Key;
+                            }
+                            else if(visitedNodes[currentNode] == true)
+                            {
+                                currentNode = kvp.Key;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //build mst
+            foreach(KeyValuePair<Vertex,bool> kvp in visitedNodes)
+            {
+                if(kvp.Value == true)
+                {
+                    if (!mst.hasVertex(kvp.Key.data)) mst.addNode(kvp.Key.data);
+                    //add edges and nodes
+                    foreach (Edge e in kvp.Key.neighbours)
+                    {
+                        
+
+                        if(!mst.hasEdge(e))
+                        {
+                            if(e.node1 == kvp.Key.data)
+                            {
+                                if(visitedNodes[g.GetVertex(e.node2)] == true)
+                                {
+                                    if(!mst.hasVertex(e.node2)) mst.addNode(e.node2);
+                                    mst.addEdge(e.weight,e.node1,e.node2,e.data);
+                                }
+                            }
+                            else if(e.node2 == kvp.Key.data)
+                            {
+                                if (visitedNodes[g.GetVertex(e.node1)] == true)
+                                {
+                                    if (!mst.hasVertex(e.node1)) mst.addNode(e.node1);
+                                    mst.addEdge(e.weight, e.node1, e.node2, e.data);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            return mst;
         }
 
         //execute the boruvka algorithm

@@ -106,15 +106,54 @@ namespace MSTapplication
                 {
                     System.Diagnostics.Debug.WriteLine("Failed starting algorithm");
                 }
-                
-
-               
-
 
             }
         }
 
-            private void boruvka_Click(object sender, RoutedEventArgs e)
+
+        //perform ga on graph
+        private void Dijkstra_Click(object sender, RoutedEventArgs e)
+        {
+            SolidColorBrush black = new SolidColorBrush();
+            black.Color = Color.FromRgb(0, 0, 0);
+            foreach (KeyValuePair<string, Line> kvp in drawableEdges)
+            {
+                kvp.Value.Stroke = black;
+            }
+
+            SolidColorBrush solidColorBrush = new SolidColorBrush();
+            solidColorBrush.Color = Color.FromRgb(255, 255, 0);
+            Graph mst = null;
+
+            //as long as there are edges perform algorithm
+            if (mainGraph.GetEdges().Count != 0)
+            {
+
+                try
+                {
+                    mst = ca.dijkstra(source.Text, destination.Text ,ref mainGraph);
+                    //colour the edges
+                    foreach (Vertex v in mst.GetVertices())
+                    {
+                        foreach (Edge edge in v.neighbours)
+                        {
+                            drawableEdges[edge.data].Stroke = solidColorBrush;
+                        }
+                    }
+
+                    //show mst weight
+                    mstWeight.Content = mst.getGraphWeight();
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine("Failed starting algorithm");
+                }
+
+            }
+        }
+
+        //perform boruvka Algorithm
+        private void boruvka_Click(object sender, RoutedEventArgs e)
         {
             SolidColorBrush black = new SolidColorBrush();
             black.Color = Color.FromRgb(0, 0, 0);
@@ -365,6 +404,7 @@ namespace MSTapplication
         private void clearGraph()
         {
             //clear all
+            ga = new GeneticAlgorithm();
             mainGraph = null;          
             display.Children.Clear();
             drawableEdges.Clear();
@@ -467,31 +507,9 @@ namespace MSTapplication
             }
                 
 
-            //get the current id for the nodes and edges
-            int i = 0;
-            foreach(KeyValuePair<string,Ellipse> kp in drawableNodes)
-            {
-                var s = kp.Key;
-                var k = idInt(ref s);
-                if ( k > i)
-                {
-                    i = k;
-                }
-            }
-            i++;
-            nodeID = "_" + i.ToString();
-            i = 0;
-            foreach (KeyValuePair<string, Line> kp in drawableEdges)
-            {
-                var s = kp.Key;
-                var k = idInt(ref s);
-                if (k > i)
-                {
-                    i = k;
-                }
-            }
-            i++;
-            edgeID = "_" + i.ToString();
+            //get the current id for the nodes and edges        
+            nodeID = "_" + drawableNodes.Count.ToString();
+            edgeID = "_" + drawableEdges.Count.ToString();
         }
     
         //get an edge made with xy coor
