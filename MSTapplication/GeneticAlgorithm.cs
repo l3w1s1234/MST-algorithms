@@ -63,19 +63,11 @@ namespace GA
                 population.calculateFitness();
 
                 //5% chance to mutate
-                if (rnd.Next(0,100) < 5)
+                if (rnd.Next(0,100) < 20)
                 {
                     mutation();
+                    population.calculateFitness();
                 }
-                
-
-
-                
-
-
-                population.calculateFitness();
-
-                
 
                 if (strongest.getFitness() > fittest.getFitness())
                 {
@@ -94,19 +86,19 @@ namespace GA
 
                     mst.addEdge(e.weight, e.node1, e.node2, e.data);
                 }
-                else if(!mst.hasVertex(e.node1))
+                if(!mst.hasVertex(e.node1))
                 {
                     mst.addNode(e.node1);
-                    if(!mst.hasVertex(e.node2)) mst.addNode(e.node2); 
-                    mst.addEdge(e.weight, e.node1, e.node2, e.data);
                 }
-                else if (!mst.hasVertex(e.node2))
+                if (!mst.hasVertex(e.node2))
                 {
                     mst.addNode(e.node2);
-                    if (!mst.hasVertex(e.node1)) mst.addNode(e.node1);
-                    mst.addEdge(e.weight, e.node1, e.node2, e.data);
                 }
 
+                if (!mst.hasEdge(e))
+                {
+                    mst.addEdge(e.weight, e.node1, e.node2, e.data);
+                }
             }
 
             return mst;
@@ -139,7 +131,7 @@ namespace GA
         //mutates an individual
         private void mutation()
         {
-            Random rnd = new Random();
+            
             
 
 
@@ -286,7 +278,9 @@ namespace GA
                 fitness += e.weight;
             }
 
-            if(actualtree == true)
+            if(temp.GetEdges().Count != genes.Count - 1) { fitness += MaxFitness*2; actualtree = false; }
+
+            if (actualtree == true)
             {
                 fitness = temp.getGraphWeight();
             }

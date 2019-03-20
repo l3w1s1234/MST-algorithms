@@ -7,6 +7,24 @@ using simpleGraph;
 
 namespace ClassicAlgorithms
 {
+    class distance
+        {
+        public Vertex prevVertex;
+        public float dist;
+
+
+
+        public distance(float d, Vertex v)
+            {
+            dist = d;
+            prevVertex = v;
+            }
+        }
+
+
+
+
+
     class classicAlgorithms
     {
       
@@ -172,9 +190,11 @@ namespace ClassicAlgorithms
         {
             Graph mst = new Graph();
 
-            Dictionary<Vertex,bool> visitedNodes = new Dictionary<Vertex,bool>();
-            List<Edge> viableEdges = new List<Edge>();
-            Dictionary<Vertex,float> distances = new Dictionary<Vertex, float>();
+            List<Vertex> visitedNodes = new List<Vertex>();//contains visted nodes and their edge id
+            
+            List<Vertex> unvisitedNodes = new List<Vertex>();
+
+            Dictionary<Vertex, distance> distances = new Dictionary<Vertex, distance>();
 
 
             bool reachedGoal = false;
@@ -184,114 +204,103 @@ namespace ClassicAlgorithms
             if(g.hasVertex(src) && g.hasVertex(dest))
             {
                 //add the source node has been visited and add its distance
-                visitedNodes.Add(g.GetVertex(src), true);
-                distances.Add(g.GetVertex(src), 0);
-                var currentNode = g.GetVertex(src);
-                var prevNode = g.GetVertex(src);
+                distances.Add(g.GetVertex(src), new distance(0,g.GetVertex(src)));
+                
+                
 
                 //set all nodes distances and mark unvisted
                 foreach(Vertex v in g.GetVertices())
                 {
                     if (v.data != src)
                     {
-                        distances.Add(v, float.MaxValue);
-                        visitedNodes.Add(v, false);
+                        distances.Add(v, new distance(float.MaxValue, null));//set unkown distance to infinity
                     }
-                    
-                    
+                    unvisitedNodes.Add(v);//add to a list of unvisited nodes
                 }
-
-
                 
+                var prevNode = g.GetVertex(src);
+                Edge minEdge = null;
+                var currentNode = g.GetVertex(src);
 
                 //while goal hasnt been reached try and get a suitable goal
-                while(!reachedGoal)
+                while (!reachedGoal)
                 {
-                    //check that current node is goal
-                    if (currentNode.data == dest)
-                    {
-                        reachedGoal = true;
-                    }
 
-                    //check neighbours of current node
+                    if (currentNode == g.GetVertex(dest)) { reachedGoal = true; }
+
+                    //find lowest distance and set the current distance that and recored the parent node
                     foreach (Edge e in currentNode.neighbours)
                     {
-                        //get weights and assign the tentative distance
-                        if(currentNode.data == e.node1)
+                        //check that set distances
+                        if(e.node1 != currentNode.data)
                         {
-                            if (e.weight < distances[g.GetVertex(e.node2)] && visitedNodes[g.GetVertex(e.node2)] == false)
+                            if (e.weight + distances[currentNode].dist < distances[g.GetVertex(e.node1)].dist && !visitedNodes.Contains(g.GetVertex(e.node2)))
                             {
-                                distances[g.GetVertex(e.node2)] = e.weight + distances[currentNode];
-                            }
-
-                        }
-                        else
-                        {
-
-                            if (e.weight < distances[g.GetVertex(e.node1)] && visitedNodes[g.GetVertex(e.node1)] == false)
-                            {
-                                distances[g.GetVertex(e.node1)] = e.weight + distances[currentNode];
+                                distances[g.GetVertex(e.node1)].dist = e.weight + distances[currentNode].dist;
+                                distances[g.GetVertex(e.node1)].prevVertex = currentNode;
                             }
                         }
+                        else if(e.node2 != currentNode.data)
+                        {
+                            if(e.weight + distances[currentNode].dist < distances[g.GetVertex(e.node2)].dist && !visitedNodes.Contains(g.GetVertex(e.node2)))
+                            {
+                                distances[g.GetVertex(e.node2)].dist = e.weight + distances[currentNode].dist;
+                                distances[g.GetVertex(e.node2)].prevVertex = currentNode;
+                            }
+                        }
 
-
+                        
+                       
                     }
 
-                    //change current node to visited
-                    if (visitedNodes[currentNode] == false)
+                    visitedNodes.Add(currentNode);
+                    unvisitedNodes.Remove(currentNode);
+                    Vertex lowestDist = null;
+
+                    //select next node that hasnt been visted that has lowest diastance
+                    foreach(KeyValuePair<Vertex,distance>kvp in distances)
                     {
-                        visitedNodes[currentNode] = true;
-                    }
-
-                    prevNode = currentNode;
-
-                    //select next node to check
-                    foreach (KeyValuePair<Vertex,float>kvp in distances)
-                    {
-                        if(kvp.Value != float.MaxValue)//if it is not equal to infinity
+                        if(lowestDist == null && !visitedNodes.Contains(kvp.Key))
                         {
-                            if(kvp.Key != currentNode && visitedNodes[kvp.Key] == false && kvp.Value<distances[currentNode])
+                            lowestDist = kvp.Key;
+                        }
+
+                        if(!visitedNodes.Contains(kvp.Key))
+                        {
+                            if(distances[kvp.Key].dist < distances[lowestDist].dist)
                             {
-                                currentNode = kvp.Key;
-                            }
-                            else if(visitedNodes[currentNode] == true)
-                            {
-                                currentNode = kvp.Key;
+                                lowestDist = kvp.Key;
                             }
                         }
+                       
                     }
+
+                    currentNode = lowestDist;
                 }
             }
 
             //build mst
-            foreach(KeyValuePair<Vertex,bool> kvp in visitedNodes)
+           foreach(Vertex v in visitedNodes)
             {
-                if(kvp.Value == true)
+                foreach(Edge e in v.neighbours)
                 {
-                    if (!mst.hasVertex(kvp.Key.data)) mst.addNode(kvp.Key.data);
-                    //add edges and nodes
-                    foreach (Edge e in kvp.Key.neighbours)
+                     if(e.node1 != v.data)
                     {
-                        
-
-                        if(!mst.hasEdge(e))
+                        if(e.node1 == distances[v].prevVertex.data)
                         {
-                            if(e.node1 == kvp.Key.data)
-                            {
-                                if(visitedNodes[g.GetVertex(e.node2)] == true)
-                                {
-                                    if(!mst.hasVertex(e.node2)) mst.addNode(e.node2);
-                                    mst.addEdge(e.weight,e.node1,e.node2,e.data);
-                                }
-                            }
-                            else if(e.node2 == kvp.Key.data)
-                            {
-                                if (visitedNodes[g.GetVertex(e.node1)] == true)
-                                {
-                                    if (!mst.hasVertex(e.node1)) mst.addNode(e.node1);
-                                    mst.addEdge(e.weight, e.node1, e.node2, e.data);
-                                }
-                            }
+                            if (!mst.hasVertex(e.node1)) { mst.addNode(e.node1); }
+                            if (!mst.hasVertex(e.node2)) { mst.addNode(e.node2); }
+                            if (!mst.hasEdge(e)) { mst.addEdge(e.weight,e.node1,e.node2,e.data); }
+
+                        }
+                    }
+                     else if(e.node2 != v.data)
+                    {
+                        if (e.node2 == distances[v].prevVertex.data)
+                        {
+                            if (!mst.hasVertex(e.node1)) { mst.addNode(e.node1); }
+                            if (!mst.hasVertex(e.node2)) { mst.addNode(e.node2); }
+                            if (!mst.hasEdge(e)) { mst.addEdge(e.weight, e.node1, e.node2, e.data); }
                         }
                     }
                 }
@@ -300,6 +309,7 @@ namespace ClassicAlgorithms
 
             return mst;
         }
+
 
         //execute the boruvka algorithm
         public void kruskal(ref Graph g)
