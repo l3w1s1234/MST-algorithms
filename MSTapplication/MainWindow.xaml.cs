@@ -111,7 +111,7 @@ namespace MSTapplication
         }
 
 
-        //perform ga on graph
+        //perform Dijkstra on graph
         private void Dijkstra_Click(object sender, RoutedEventArgs e)
         {
             SolidColorBrush black = new SolidColorBrush();
@@ -132,6 +132,88 @@ namespace MSTapplication
                 try
                 {
                     mst = ca.dijkstra(source.Text, destination.Text ,ref mainGraph);
+                    //colour the edges
+                    foreach (Vertex v in mst.GetVertices())
+                    {
+                        foreach (Edge edge in v.neighbours)
+                        {
+                            drawableEdges[edge.data].Stroke = solidColorBrush;
+                        }
+                    }
+
+                    //show mst weight
+                    mstWeight.Content = mst.getGraphWeight();
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine("Failed starting algorithm");
+                }
+
+            }
+        }
+
+
+        private void DijkstraNoDest_Click(object sender, RoutedEventArgs e)
+        {
+            SolidColorBrush black = new SolidColorBrush();
+            black.Color = Color.FromRgb(0, 0, 0);
+            foreach (KeyValuePair<string, Line> kvp in drawableEdges)
+            {
+                kvp.Value.Stroke = black;
+            }
+
+            SolidColorBrush solidColorBrush = new SolidColorBrush();
+            solidColorBrush.Color = Color.FromRgb(255, 255, 0);
+            Graph mst = null;
+
+            //as long as there are edges perform algorithm
+            if (mainGraph.GetEdges().Count != 0)
+            {
+
+                try
+                {
+                    mst = ca.dijkstraNoDest(source2.Text, ref mainGraph);
+                    //colour the edges
+                    foreach (Vertex v in mst.GetVertices())
+                    {
+                        foreach (Edge edge in v.neighbours)
+                        {
+                            drawableEdges[edge.data].Stroke = solidColorBrush;
+                        }
+                    }
+
+                    //show mst weight
+                    mstWeight.Content = mst.getGraphWeight();
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine("Failed starting algorithm");
+                }
+
+            }
+        }
+
+        //perform kruskal algorithm
+        private void Kruskal_Click(object sender, RoutedEventArgs e)
+        {
+            SolidColorBrush black = new SolidColorBrush();
+            black.Color = Color.FromRgb(0, 0, 0);
+            foreach (KeyValuePair<string, Line> kvp in drawableEdges)
+            {
+                kvp.Value.Stroke = black;
+            }
+
+            SolidColorBrush solidColorBrush = new SolidColorBrush();
+            solidColorBrush.Color = Color.FromRgb(255, 255, 0);
+            Graph mst = null;
+
+            //as long as there are edges perform algorithm
+            if (mainGraph.GetEdges().Count != 0)
+            {
+
+                try
+                {
+                    mst = ca.kruskal(ref mainGraph);
                     //colour the edges
                     foreach (Vertex v in mst.GetVertices())
                     {

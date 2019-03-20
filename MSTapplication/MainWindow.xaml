@@ -103,8 +103,26 @@
                                 <Label Content="Destination" Grid.Column="0" Grid.Row="1"></Label>
                                 <TextBox x:Name="destination" Grid.Column="1" Grid.Row="1" Margin="5"></TextBox>
                                 <Button x:Name="Dijkstra" Content="Dijkstra" Margin="5" Click="Dijkstra_Click" Grid.Row="2"/>
+
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="4*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="2*"/>
+                                    <RowDefinition Height="2*"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Content="Source" Grid.Column="0" Grid.Row="0"></Label>
+                                <TextBox x:Name="source2" Grid.Column="1" Grid.Row="0"  Margin="5"></TextBox>
+                                
+                                <Button x:Name="DijkstraNoDest" Content="DijkstraNoDest" Margin="5" Click="DijkstraNoDest_Click" Grid.Row="2"/>
+
                             </Grid>
                             <Button x:Name="boruvka" Content="Boruvka" Margin="5" Click="boruvka_Click"/>
+                            <Button x:Name="kruskal" Content="Kruskal" Margin="5" Click="Kruskal_Click"/>
                         </ListBox>
 
                     </StackPanel>

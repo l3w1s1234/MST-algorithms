@@ -163,9 +163,10 @@ namespace ClassicAlgorithms
                 if (n.neighbours.Count > 2)
                 {
                     Edge maxEdge = null;
-                    while(n.neighbours.Count > 2)
+                    while (n.neighbours.Count > 2)
                     {
-                        foreach(Edge e in n.neighbours)
+                        
+                        foreach (Edge e in n.neighbours)
                         {
                             if (maxEdge == null) maxEdge = e;
                             else if(maxEdge.weight < e.weight)
@@ -179,13 +180,13 @@ namespace ClassicAlgorithms
 
                 }
             }
+
             components[0].edges = components[0].GetEdges().Count;
-           
             return components[0];
         }
 
 
-        //execute the boruvka algorithm
+        //execute the Dijkstra algorithm
         public Graph dijkstra(string src, string dest, ref Graph g)
         {
             Graph mst = new Graph();
@@ -219,7 +220,6 @@ namespace ClassicAlgorithms
                 }
                 
                 var prevNode = g.GetVertex(src);
-                Edge minEdge = null;
                 var currentNode = g.GetVertex(src);
 
                 //while goal hasnt been reached try and get a suitable goal
@@ -310,20 +310,303 @@ namespace ClassicAlgorithms
             return mst;
         }
 
-
-        //execute the boruvka algorithm
-        public void kruskal(ref Graph g)
+        //execute dijkstra without a goal
+        public Graph dijkstraNoDest(string src, ref Graph g)
         {
+            Graph mst = new Graph();
+
+            List<Vertex> visitedNodes = new List<Vertex>();//contains visted nodes and their edge id
+
+            List<Vertex> unvisitedNodes = new List<Vertex>();
+
+            Dictionary<Vertex, distance> distances = new Dictionary<Vertex, distance>();
+
+            //check that the source and destination exists
+            if (g.hasVertex(src))
+            {
+                //add the source node has been visited and add its distance
+                distances.Add(g.GetVertex(src), new distance(0, g.GetVertex(src)));
+
+
+
+                //set all nodes distances and mark unvisted
+                foreach (Vertex v in g.GetVertices())
+                {
+                    if (v.data != src)
+                    {
+                        distances.Add(v, new distance(float.MaxValue, null));//set unkown distance to infinity
+                    }
+                    unvisitedNodes.Add(v);//add to a list of unvisited nodes
+                }
+
+                var prevNode = g.GetVertex(src);
+                var currentNode = g.GetVertex(src);
+
+                //while goal hasnt been reached try and get a suitable goal
+                while (unvisitedNodes.Count > 0)
+                {
+
+                    
+
+                    //find lowest distance and set the current distance that and recored the parent node
+                    foreach (Edge e in currentNode.neighbours)
+                    {
+                        //check that set distances
+                        if (e.node1 != currentNode.data)
+                        {
+                            if (e.weight + distances[currentNode].dist < distances[g.GetVertex(e.node1)].dist && !visitedNodes.Contains(g.GetVertex(e.node2)))
+                            {
+                                distances[g.GetVertex(e.node1)].dist = e.weight + distances[currentNode].dist;
+                                distances[g.GetVertex(e.node1)].prevVertex = currentNode;
+                            }
+                        }
+                        else if (e.node2 != currentNode.data)
+                        {
+                            if (e.weight + distances[currentNode].dist < distances[g.GetVertex(e.node2)].dist && !visitedNodes.Contains(g.GetVertex(e.node2)))
+                            {
+                                distances[g.GetVertex(e.node2)].dist = e.weight + distances[currentNode].dist;
+                                distances[g.GetVertex(e.node2)].prevVertex = currentNode;
+                            }
+                        }
+
+
+
+                    }
+
+                    visitedNodes.Add(currentNode);
+                    unvisitedNodes.Remove(currentNode);
+                    Vertex lowestDist = null;
+
+                    //select next node that hasnt been visted that has lowest diastance
+                    foreach (KeyValuePair<Vertex, distance> kvp in distances)
+                    {
+                        if (lowestDist == null && !visitedNodes.Contains(kvp.Key))
+                        {
+                            lowestDist = kvp.Key;
+                        }
+
+                        if (!visitedNodes.Contains(kvp.Key))
+                        {
+                            if (distances[kvp.Key].dist < distances[lowestDist].dist)
+                            {
+                                lowestDist = kvp.Key;
+                            }
+                        }
+
+                    }
+
+                    currentNode = lowestDist;
+                }
+            }
+
+            //build mst
+            foreach (Vertex v in visitedNodes)
+            {
+                foreach (Edge e in v.neighbours)
+                {
+                    if (e.node1 != v.data)
+                    {
+                        if (e.node1 == distances[v].prevVertex.data)
+                        {
+                            if (!mst.hasVertex(e.node1)) { mst.addNode(e.node1); }
+                            if (!mst.hasVertex(e.node2)) { mst.addNode(e.node2); }
+                            if (!mst.hasEdge(e)) { mst.addEdge(e.weight, e.node1, e.node2, e.data); }
+
+                        }
+                    }
+                    else if (e.node2 != v.data)
+                    {
+                        if (e.node2 == distances[v].prevVertex.data)
+                        {
+                            if (!mst.hasVertex(e.node1)) { mst.addNode(e.node1); }
+                            if (!mst.hasVertex(e.node2)) { mst.addNode(e.node2); }
+                            if (!mst.hasEdge(e)) { mst.addEdge(e.weight, e.node1, e.node2, e.data); }
+                        }
+                    }
+                }
+            }
+
+
+            return mst;
+        }
+
+        //execute the kruskal algorithm
+        public Graph kruskal(ref Graph g)
+        {
+            Graph mst = null;
+            List<Edge> edges = g.GetEdges();
+
+            Edge[] orderedEdges = new Edge[edges.Count];
+            Edge minEdge;
+            int i = 0;
+            //sort edges
+            while (edges.Count != 0)
+            {
+                minEdge = null;
+                foreach(Edge e in edges)
+                {
+                    if(minEdge == null)
+                    {
+                        minEdge = e;
+                    }
+                    else if(e.weight < minEdge.weight)
+                    {
+                        minEdge = e;
+                    }
+                }
+
+                edges.Remove(minEdge);
+                orderedEdges[i] = minEdge;
+                i++;
+            }
+            
+            //build mst
+            for(int k =0; k<orderedEdges.Length-1;k++)
+            {
+                if(mst == null)
+                {
+                    mst = new Graph();
+                    mst.addNode(orderedEdges[k].node1);
+                    mst.addNode(orderedEdges[k].node2);
+                    mst.addEdge(orderedEdges[k].weight,orderedEdges[k].node1, orderedEdges[k].node2, orderedEdges[k].data);
+                }
+
+               
+               if (mst.hasVertex(orderedEdges[k].node2) && mst.hasVertex(orderedEdges[k].node1))
+                {
+                    if (mst.GetVertex(orderedEdges[k].node2).neighbours.Count <= 2 && mst.GetVertex(orderedEdges[k].node1).neighbours.Count < 2)
+                    {
+                        if (!mst.hasVertex(orderedEdges[k].node1)) { mst.addNode(orderedEdges[k].node1); }
+                        if (!mst.hasVertex(orderedEdges[k].node2)) { mst.addNode(orderedEdges[k].node2); }
+
+                        if (!mst.hasEdge(orderedEdges[k])) {
+                            mst.addEdge(orderedEdges[k].weight, orderedEdges[k].node1, orderedEdges[k].node2, orderedEdges[k].data);
+                            
+                        }
+                        mst = checkCycle(mst, mst.GetVertex(orderedEdges[k].node1));
+                    }
+                }
+                else if (!mst.hasVertex(orderedEdges[k].node1) || !mst.hasVertex(orderedEdges[k].node2))
+                {
+                    if (!mst.hasVertex(orderedEdges[k].node1)) { mst.addNode(orderedEdges[k].node1); }
+                    if (!mst.hasVertex(orderedEdges[k].node2)) { mst.addNode(orderedEdges[k].node2); }
+
+                    if (!mst.hasEdge(orderedEdges[k])) {
+                        mst.addEdge(orderedEdges[k].weight, orderedEdges[k].node1, orderedEdges[k].node2, orderedEdges[k].data); }
+                }
+
+               
+            }
+
+           
+            
+
+            return mst;
 
         }
 
-        //execute the boruvka algorithm
+        //meant to be used with kruskal, but can be used with other algorithms to remove cycles
+        public Graph checkCycle(Graph g, Vertex start)
+        {//check for a cycle
+            Dictionary<Vertex, bool> visited = new Dictionary<Vertex, bool>();
+            bool noCycle = false;
+            foreach (Vertex n in g.GetVertices())
+            {
+                visited.Add(n, false);
+            }
+            Vertex v = start;
+            Vertex prevNode = start;
+            Edge maxEdge = null;
+            //check for a cycle
+            while (!noCycle)
+            {
+
+
+                foreach (Edge e in v.neighbours)
+                {
+                    if (maxEdge == null) maxEdge = e;
+
+                    if (e.node1 != v.data)
+                    {
+                        if (visited[g.GetVertex(e.node1)] == true && e.node1 != prevNode.data)
+                        {
+                            if (maxEdge.weight < e.weight) maxEdge = e;
+                            noCycle = false;
+                            g.removeEdge(maxEdge.node1, maxEdge.data);
+                            g.removeEdge(maxEdge.node2, maxEdge.data);
+                            visited = new Dictionary<Vertex, bool>();
+                            foreach (Vertex n in g.GetVertices())
+                            {
+                                visited.Add(n,false);
+                            }
+                            v = visited.ElementAt(0).Key;
+                            break;
+                        }
+                        else if (g.GetVertex(e.node1).neighbours.Count > 1 && e.node1 != prevNode.data)
+                        {
+                            if (maxEdge.weight < e.weight) maxEdge = e;
+                            noCycle = false;
+                            visited[v] = true;
+                            prevNode = v;
+                            v = g.GetVertex(e.node1);
+                            break;
+                        }
+                        else if (g.GetVertex(e.node1).neighbours.Count <=1 )
+                        {
+                            noCycle = true;
+                        }
+                        
+
+                    }
+                    else
+                    {
+                        if (visited[g.GetVertex(e.node2)] == true && e.node2 != prevNode.data )
+                        {
+                            if (maxEdge.weight < e.weight) maxEdge = e;
+                            noCycle = false;
+                            g.removeEdge(maxEdge.node1, maxEdge.data);
+                            g.removeEdge(maxEdge.node2, maxEdge.data);
+                            visited = new Dictionary<Vertex, bool>();
+                            foreach (Vertex n in g.GetVertices())
+                            {
+                                visited.Add(n, false);
+                            }
+                            v = visited.ElementAt(0).Key;
+                            break;
+                        }
+                        else if (g.GetVertex(e.node2).neighbours.Count > 1 && e.node2 != prevNode.data)
+                        {
+                            if (maxEdge.weight < e.weight) maxEdge = e;
+                            noCycle = false;
+                            visited[v] = true;
+                            prevNode = v;
+                            v = g.GetVertex(e.node2);
+                            break;
+                        }
+                        else if (g.GetVertex(e.node2).neighbours.Count <=1 )
+                        {
+                            noCycle = true;
+                        }
+                    }
+                }
+
+
+                
+                
+
+                
+            }
+            return g;
+        }
+
+
+        //execute the Prim algorithm
         public void prim(ref Graph g)
         {
 
         }
 
-        //execute the boruvka algorithm
+        //execute the aStar algorithm
         public void aStar(ref Graph g)
         {
 
