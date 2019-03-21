@@ -131,7 +131,12 @@ namespace MSTapplication
 
                 try
                 {
-                    mst = ca.dijkstra(source.Text, destination.Text ,ref mainGraph);
+                    var n1 = source.Text;
+                    var n2 = destination.Text;
+
+                    if(n1.Substring(0,1) != "_") { n1 = "_" + n1; }
+                    if (n2.Substring(0, 1) != "_") { n2 = "_" + n2; }
+                    mst = ca.dijkstra(n1, n2 ,ref mainGraph);
                     //colour the edges
                     foreach (Vertex v in mst.GetVertices())
                     {
@@ -172,7 +177,11 @@ namespace MSTapplication
 
                 try
                 {
-                    mst = ca.dijkstraNoDest(source2.Text, ref mainGraph);
+                    var n1 = source.Text;
+
+                    if (n1.Substring(0, 1) != "_") { n1 = "_" + n1; }
+
+                    mst = ca.dijkstraNoDest(n1, ref mainGraph);
                     //colour the edges
                     foreach (Vertex v in mst.GetVertices())
                     {
@@ -266,6 +275,60 @@ namespace MSTapplication
                 mstWeight.Content = mst.getGraphWeight();
 
             }
+        }
+
+
+        //generate a random graph with set amount of nodes
+        private void generate_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int nodes = int.Parse(noNodes.Text);
+                if(nodes > 1)
+                {
+                    clearGraph();
+                    mainGraph = new Graph();
+                    //add x amount of nodes to graph
+                    for (int i = 0; i < nodes; i++)
+                    {
+                        mainGraph.addNode(nodeID);
+                        incrementID(ref nodeID);
+                    }
+                    var rnd = new Random();
+
+                    //add edge to every vertex
+                    foreach (Vertex v in mainGraph.GetVertices())
+                    {
+                        var v2 = mainGraph.getRandomVertex();
+                        if (v2.data == v.data || v2.neighbours.Count > 3)
+                        {
+                            while (v2.data == v.data|| v2.neighbours.Count >3)
+                            {
+                                v2 = mainGraph.getRandomVertex();
+                            }
+                        }
+
+
+                        if (!v.hasNeighbour(v2.data))
+                        {
+                            mainGraph.addEdge(rnd.Next(1, 501), v.data, v2.data, edgeID);
+                            incrementID(ref edgeID);
+                        }
+                        
+                        
+                    }
+
+                    randomEllipseEdges();
+                }
+                
+            }
+            catch
+            {
+                System.Diagnostics.Debug.WriteLine("Failed generating graph");
+            }
+            
+
+            
         }
 
         //used to change id for nodes
@@ -487,7 +550,7 @@ namespace MSTapplication
         {
             //clear all
             ga = new GeneticAlgorithm();
-            mainGraph = null;          
+            mainGraph = new Graph();          
             display.Children.Clear();
             drawableEdges.Clear();
             drawableNodes.Clear();
@@ -632,9 +695,15 @@ namespace MSTapplication
         {
             try
             {
+                Vertex node1;
+                Vertex node2;
                 //get node data
-                var node1 = mainGraph.GetVertex(Node1.Text);
-                var node2 = mainGraph.GetVertex(Node2.Text);
+                if (Node1.Text.Substring(0, 1) != "_") { node1 = mainGraph.GetVertex("_" + Node1.Text); }
+                else {  node1 = mainGraph.GetVertex(Node1.Text); }
+
+                if (Node2.Text.Substring(0, 1) != "_") { node2 = mainGraph.GetVertex("_" + Node2.Text); }
+                else { node2 = mainGraph.GetVertex(Node2.Text); }
+                
                 float weight = float.Parse(Weight.Text);
 
                 //check edge doesnt exist and then add to graph and draw
@@ -757,6 +826,7 @@ namespace MSTapplication
         //display the neigbours within the node and weights
         private void displayNeighbours(ref Vertex node)
         {
+            
             //get all edges
             foreach(Edge e in node.neighbours)
             {

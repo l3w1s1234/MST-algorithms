@@ -162,10 +162,10 @@ namespace ClassicAlgorithms
             {
                 if (n.neighbours.Count > 2)
                 {
-                    Edge maxEdge = null;
+                    
                     while (n.neighbours.Count > 2)
                     {
-                        
+                        Edge maxEdge = null;
                         foreach (Edge e in n.neighbours)
                         {
                             if (maxEdge == null) maxEdge = e;
@@ -483,7 +483,7 @@ namespace ClassicAlgorithms
                             mst.addEdge(orderedEdges[k].weight, orderedEdges[k].node1, orderedEdges[k].node2, orderedEdges[k].data);
                             
                         }
-                        mst = checkCycle(mst, mst.GetVertex(orderedEdges[k].node1));
+                        mst = deleteCycle(mst, mst.GetVertex(orderedEdges[k].node1));
                     }
                 }
                 else if (!mst.hasVertex(orderedEdges[k].node1) || !mst.hasVertex(orderedEdges[k].node2))
@@ -506,7 +506,7 @@ namespace ClassicAlgorithms
         }
 
         //meant to be used with kruskal, but can be used with other algorithms to remove cycles
-        public Graph checkCycle(Graph g, Vertex start)
+        public Graph deleteCycle(Graph g, Vertex start)
         {//check for a cycle
             Dictionary<Vertex, bool> visited = new Dictionary<Vertex, bool>();
             bool noCycle = false;
