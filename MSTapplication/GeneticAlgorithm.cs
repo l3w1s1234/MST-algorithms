@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using simpleGraph;
+using ClassicAlgorithms;
 
 namespace GA
 {
@@ -280,10 +281,22 @@ namespace GA
 
             if(temp.GetEdges().Count != genes.Count - 1) { fitness += MaxFitness*2; actualtree = false; }
 
+            var ca = new classicAlgorithms();
+
+            if (ca.checkCycle(temp, temp.getRandomVertex()))
+            {
+                fitness += MaxFitness;
+                actualtree = false;
+            }
+
+
             if (actualtree == true)
             {
                 fitness = temp.getGraphWeight();
             }
+
+            
+           
         }
     }
         

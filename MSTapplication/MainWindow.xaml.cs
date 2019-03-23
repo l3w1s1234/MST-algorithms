@@ -177,7 +177,7 @@ namespace MSTapplication
 
                 try
                 {
-                    var n1 = source.Text;
+                    var n1 = source2.Text;
 
                     if (n1.Substring(0, 1) != "_") { n1 = "_" + n1; }
 

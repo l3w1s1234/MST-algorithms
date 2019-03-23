@@ -474,7 +474,7 @@ namespace ClassicAlgorithms
                
                if (mst.hasVertex(orderedEdges[k].node2) && mst.hasVertex(orderedEdges[k].node1))
                 {
-                    if (mst.GetVertex(orderedEdges[k].node2).neighbours.Count <= 2 && mst.GetVertex(orderedEdges[k].node1).neighbours.Count < 2)
+                    if (mst.GetVertex(orderedEdges[k].node2).neighbours.Count <= 2 && mst.GetVertex(orderedEdges[k].node1).neighbours.Count <= 2)
                     {
                         if (!mst.hasVertex(orderedEdges[k].node1)) { mst.addNode(orderedEdges[k].node1); }
                         if (!mst.hasVertex(orderedEdges[k].node2)) { mst.addNode(orderedEdges[k].node2); }
@@ -483,7 +483,10 @@ namespace ClassicAlgorithms
                             mst.addEdge(orderedEdges[k].weight, orderedEdges[k].node1, orderedEdges[k].node2, orderedEdges[k].data);
                             
                         }
-                        mst = deleteCycle(mst, mst.GetVertex(orderedEdges[k].node1));
+                       if(checkCycle(mst, mst.GetVertex(orderedEdges[k].node1))){
+                            mst.removeEdge(orderedEdges[k].node1, orderedEdges[k].data);
+                            mst.removeEdge(orderedEdges[k].node2, orderedEdges[k].data);
+                        }
                     }
                 }
                 else if (!mst.hasVertex(orderedEdges[k].node1) || !mst.hasVertex(orderedEdges[k].node2))
@@ -506,9 +509,11 @@ namespace ClassicAlgorithms
         }
 
         //meant to be used with kruskal, but can be used with other algorithms to remove cycles
-        public Graph deleteCycle(Graph g, Vertex start)
+        public bool checkCycle(Graph g, Vertex start)
         {//check for a cycle
             Dictionary<Vertex, bool> visited = new Dictionary<Vertex, bool>();
+            Queue<KeyValuePair<Vertex,Vertex>> uncheckedRoutes = new Queue<KeyValuePair<Vertex,Vertex>>();
+
             bool noCycle = false;
             foreach (Vertex n in g.GetVertices())
             {
@@ -521,7 +526,7 @@ namespace ClassicAlgorithms
             while (!noCycle)
             {
 
-
+                noCycle = false;
                 foreach (Edge e in v.neighbours)
                 {
                     if (maxEdge == null) maxEdge = e;
@@ -531,72 +536,74 @@ namespace ClassicAlgorithms
                         if (visited[g.GetVertex(e.node1)] == true && e.node1 != prevNode.data)
                         {
                             if (maxEdge.weight < e.weight) maxEdge = e;
-                            noCycle = false;
-                            g.removeEdge(maxEdge.node1, maxEdge.data);
-                            g.removeEdge(maxEdge.node2, maxEdge.data);
-                            visited = new Dictionary<Vertex, bool>();
-                            foreach (Vertex n in g.GetVertices())
-                            {
-                                visited.Add(n,false);
-                            }
-                            v = visited.ElementAt(0).Key;
-                            break;
+                            return true;
                         }
                         else if (g.GetVertex(e.node1).neighbours.Count > 1 && e.node1 != prevNode.data)
                         {
                             if (maxEdge.weight < e.weight) maxEdge = e;
-                            noCycle = false;
-                            visited[v] = true;
-                            prevNode = v;
-                            v = g.GetVertex(e.node1);
-                            break;
+                            var kvp = new KeyValuePair<Vertex,Vertex> (v, g.GetVertex(e.node1));
+                            uncheckedRoutes.Enqueue(kvp);
+                            
                         }
                         else if (g.GetVertex(e.node1).neighbours.Count <=1 )
                         {
-                            noCycle = true;
+                            visited[g.GetVertex(e.node1)] = true;
                         }
                         
 
                     }
                     else
                     {
-                        if (visited[g.GetVertex(e.node2)] == true && e.node2 != prevNode.data )
+                        if (visited[g.GetVertex(e.node2)] == true && e.node2 != prevNode.data)
                         {
                             if (maxEdge.weight < e.weight) maxEdge = e;
-                            noCycle = false;
-                            g.removeEdge(maxEdge.node1, maxEdge.data);
-                            g.removeEdge(maxEdge.node2, maxEdge.data);
-                            visited = new Dictionary<Vertex, bool>();
-                            foreach (Vertex n in g.GetVertices())
-                            {
-                                visited.Add(n, false);
-                            }
-                            v = visited.ElementAt(0).Key;
-                            break;
+                            return true;
                         }
                         else if (g.GetVertex(e.node2).neighbours.Count > 1 && e.node2 != prevNode.data)
                         {
                             if (maxEdge.weight < e.weight) maxEdge = e;
-                            noCycle = false;
-                            visited[v] = true;
-                            prevNode = v;
-                            v = g.GetVertex(e.node2);
-                            break;
+                            var kvp = new KeyValuePair<Vertex, Vertex>(v, g.GetVertex(e.node2));
+                            uncheckedRoutes.Enqueue(kvp);
                         }
-                        else if (g.GetVertex(e.node2).neighbours.Count <=1 )
+                        else if (g.GetVertex(e.node2).neighbours.Count <= 1)
                         {
-                            noCycle = true;
+                            maxEdge = null;
+                            visited[g.GetVertex(e.node2)] = true;
                         }
                     }
                 }
+                visited[v] = true;//set the node to visited
 
-
+                //check to see all nodes have been checked
+                noCycle = true;
+                foreach(KeyValuePair<Vertex,bool>kvp in visited)
+                {
+                    if (kvp.Value == false)
+                    {
+                        noCycle = false;
+                    }
+                        
+                }
                 
-                
+                //if there is still cycles check from an unchecked path
+                if(noCycle == false)
+                {
+                    if (uncheckedRoutes.Count != 0)
+                    {
+                        v = uncheckedRoutes.Peek().Value;
+                        prevNode = uncheckedRoutes.Dequeue().Key;
+                    }
+                    else {
+                        noCycle = true;
+                    }
+                        
+                    
+                    
+                }
 
                 
             }
-            return g;
+            return false;
         }
 
 
