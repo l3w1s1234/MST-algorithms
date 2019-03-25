@@ -63,10 +63,12 @@ namespace MSTapplication
         //keeps the original postion of the node before it hasbeen moved
         Point originalPosition;
 
+        private SolidColorBrush boldYellow = new SolidColorBrush();
 
         public MainWindow()
         {
             InitializeComponent();
+            boldYellow.Color = Color.FromRgb(252, 190, 17);
         }
 
         //perform ga on graph
@@ -79,8 +81,6 @@ namespace MSTapplication
                 kvp.Value.Stroke = black;
             }
 
-            SolidColorBrush solidColorBrush = new SolidColorBrush();
-            solidColorBrush.Color = Color.FromRgb(255, 255, 0);
             Graph mst = null;
 
             //as long as there are edges perform algorithm
@@ -95,7 +95,7 @@ namespace MSTapplication
                     {
                         foreach (Edge edge in v.neighbours)
                         {
-                            drawableEdges[edge.data].Stroke = solidColorBrush;
+                            drawableEdges[edge.data].Stroke = boldYellow;
                         }
                     }
 
@@ -121,8 +121,6 @@ namespace MSTapplication
                 kvp.Value.Stroke = black;
             }
 
-            SolidColorBrush solidColorBrush = new SolidColorBrush();
-            solidColorBrush.Color = Color.FromRgb(255, 255, 0);
             Graph mst = null;
 
             //as long as there are edges perform algorithm
@@ -142,7 +140,7 @@ namespace MSTapplication
                     {
                         foreach (Edge edge in v.neighbours)
                         {
-                            drawableEdges[edge.data].Stroke = solidColorBrush;
+                            drawableEdges[edge.data].Stroke = boldYellow;
                         }
                     }
 
@@ -167,8 +165,6 @@ namespace MSTapplication
                 kvp.Value.Stroke = black;
             }
 
-            SolidColorBrush solidColorBrush = new SolidColorBrush();
-            solidColorBrush.Color = Color.FromRgb(255, 255, 0);
             Graph mst = null;
 
             //as long as there are edges perform algorithm
@@ -187,7 +183,7 @@ namespace MSTapplication
                     {
                         foreach (Edge edge in v.neighbours)
                         {
-                            drawableEdges[edge.data].Stroke = solidColorBrush;
+                            drawableEdges[edge.data].Stroke = boldYellow;
                         }
                     }
 
@@ -211,9 +207,6 @@ namespace MSTapplication
             {
                 kvp.Value.Stroke = black;
             }
-
-            SolidColorBrush solidColorBrush = new SolidColorBrush();
-            solidColorBrush.Color = Color.FromRgb(255, 255, 0);
             Graph mst = null;
 
             //as long as there are edges perform algorithm
@@ -228,7 +221,7 @@ namespace MSTapplication
                     {
                         foreach (Edge edge in v.neighbours)
                         {
-                            drawableEdges[edge.data].Stroke = solidColorBrush;
+                            drawableEdges[edge.data].Stroke = boldYellow;
                         }
                     }
 
@@ -267,7 +260,7 @@ namespace MSTapplication
                 {
                     foreach (Edge edge in v.neighbours)
                     {
-                        drawableEdges[edge.data].Stroke = solidColorBrush;
+                        drawableEdges[edge.data].Stroke = boldYellow;
                     }
                 }
 
