@@ -22,6 +22,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
 using ClassicAlgorithms;
 using GA;
+using System.Xml;
 
 namespace MSTapplication
 {
@@ -63,12 +64,12 @@ namespace MSTapplication
         //keeps the original postion of the node before it hasbeen moved
         Point originalPosition;
 
-        private SolidColorBrush boldYellow = new SolidColorBrush();
+        private SolidColorBrush blue= new SolidColorBrush();
 
         public MainWindow()
         {
             InitializeComponent();
-            boldYellow.Color = Color.FromRgb(252, 190, 17);
+            blue.Color = Color.FromRgb(0, 0, 255);
         }
 
         //perform ga on graph
@@ -95,7 +96,7 @@ namespace MSTapplication
                     {
                         foreach (Edge edge in v.neighbours)
                         {
-                            drawableEdges[edge.data].Stroke = boldYellow;
+                            drawableEdges[edge.data].Stroke = blue;
                         }
                     }
 
@@ -140,7 +141,7 @@ namespace MSTapplication
                     {
                         foreach (Edge edge in v.neighbours)
                         {
-                            drawableEdges[edge.data].Stroke = boldYellow;
+                            drawableEdges[edge.data].Stroke = blue;
                         }
                     }
 
@@ -183,7 +184,7 @@ namespace MSTapplication
                     {
                         foreach (Edge edge in v.neighbours)
                         {
-                            drawableEdges[edge.data].Stroke = boldYellow;
+                            drawableEdges[edge.data].Stroke = blue;
                         }
                     }
 
@@ -221,7 +222,7 @@ namespace MSTapplication
                     {
                         foreach (Edge edge in v.neighbours)
                         {
-                            drawableEdges[edge.data].Stroke = boldYellow;
+                            drawableEdges[edge.data].Stroke = blue;
                         }
                     }
 
@@ -260,7 +261,7 @@ namespace MSTapplication
                 {
                     foreach (Edge edge in v.neighbours)
                     {
-                        drawableEdges[edge.data].Stroke = boldYellow;
+                        drawableEdges[edge.data].Stroke = blue;
                     }
                 }
 
@@ -440,7 +441,7 @@ namespace MSTapplication
         private void loadGraph_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
-            openFile.Filter = "Graph Data|*.dat|Graph Json|*.json|All Files|*.dat;*.json";
+            openFile.Filter = "All Files|*.dat;*.json;*.xml|Graph Data|*.dat|Graph Json|*.json|XMLData|*.xml";
             openFile.Title = "Open a Graph Data file";
             openFile.ShowDialog();
 
@@ -483,6 +484,48 @@ namespace MSTapplication
                     catch
                     {
                         System.Diagnostics.Debug.WriteLine("Load failed");
+                    }
+                }
+                else if (ext == ".xml")
+                {
+                    try
+                    {
+                        XmlDocument doc = new XmlDocument();
+                        doc.Load(openFile.OpenFile());
+                        XmlNode graph = doc.LastChild.LastChild;
+                        List<string> edges = new List<string>();
+
+                        for(int i = 0; i<graph.ChildNodes.Count;i++)
+                        {
+                            var str = "_" + i.ToString();
+                            mainGraph.addNode(str);
+                        }
+
+                        int k = 0;
+                        foreach(XmlNode vertex in graph.ChildNodes)
+                        {
+                            foreach(XmlNode edge in vertex.ChildNodes)
+                            {
+                               var temp= edge.Attributes.GetNamedItem("cost");
+                               float weight = float.Parse(temp.InnerText);
+
+                               var ed = new Edge("_" + k, "_" + edge.InnerText, weight, edgeID);
+
+                                if (!mainGraph.GetVertex(ed.node1).hasNeighbour(ed.node2)) {
+                                    mainGraph.addEdge(ed.weight, ed.node1, ed.node2, ed.data);
+                                    incrementID(ref edgeID);
+                                }
+                                
+                            }
+                            k++;
+                        }
+
+
+                        randomEllipseEdges();
+                    }
+                    catch
+                    {
+
                     }
                 }
 
@@ -580,10 +623,10 @@ namespace MSTapplication
                 double x = (double)random.Next(0,(int)display.ActualWidth);
                 double y = (double)random.Next(0, (int)display.ActualHeight);
 
-                nodeEllipse.StrokeThickness = 2;
+                nodeEllipse.StrokeThickness = 1;
                 nodeEllipse.Stroke = Brushes.Black;
-                nodeEllipse.Width = 15;
-                nodeEllipse.Height = 15;
+                nodeEllipse.Width = 10;
+                nodeEllipse.Height = 10;
 
                 nodeEllipse.SetValue(Canvas.LeftProperty, x - (nodeEllipse.Width / 2));
                 nodeEllipse.SetValue(Canvas.TopProperty, y - (nodeEllipse.Height / 2));
@@ -613,9 +656,7 @@ namespace MSTapplication
             }
 
             //draw edges
-            foreach (Vertex node in mainGraph.GetVertices())
-            {
-                foreach (Edge e in node.neighbours)
+                foreach (Edge e in mainGraph.GetEdges())
                 {
                     if (!drawableEdges.ContainsKey(e.data))
                     {
@@ -642,7 +683,7 @@ namespace MSTapplication
                         display.Children.Add(edge);
                     }
                 }
-            }
+            
                 
 
             //get the current id for the nodes and edges        
@@ -660,7 +701,7 @@ namespace MSTapplication
             edge.Y1 = y1;
             edge.X2 = x2;
             edge.Y2 = y2;
-            edge.StrokeThickness = 2;
+            edge.StrokeThickness = 1;
 
             return edge;
             
@@ -742,7 +783,7 @@ namespace MSTapplication
             edge.X2 = x2;
             edge.Y2 = y2;
 
-            edge.StrokeThickness = 2;
+            edge.StrokeThickness = 1;
 
             edge.Name=edgeID;
 
@@ -784,10 +825,10 @@ namespace MSTapplication
             double x = mousePos.X;
             double y = mousePos.Y;
 
-            nodeEllipse.StrokeThickness = 2;
+            nodeEllipse.StrokeThickness = 1;
             nodeEllipse.Stroke = Brushes.Black;
-            nodeEllipse.Width = 15;
-            nodeEllipse.Height = 15;
+            nodeEllipse.Width = 10;
+            nodeEllipse.Height = 10;
 
             nodeEllipse.SetValue(Canvas.LeftProperty, x - (nodeEllipse.Width / 2));
             nodeEllipse.SetValue(Canvas.TopProperty, y - (nodeEllipse.Height / 2));
