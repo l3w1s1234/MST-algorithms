@@ -64,12 +64,12 @@ namespace MSTapplication
         //keeps the original postion of the node before it hasbeen moved
         Point originalPosition;
 
-        private SolidColorBrush blue= new SolidColorBrush();
+        private SolidColorBrush yellow= new SolidColorBrush();
 
         public MainWindow()
         {
             InitializeComponent();
-            blue.Color = Color.FromRgb(0, 0, 255);
+            yellow.Color = Color.FromRgb(255, 255, 0);
         }
 
         //perform ga on graph
@@ -96,10 +96,21 @@ namespace MSTapplication
                     {
                         foreach (Edge edge in v.neighbours)
                         {
-                            drawableEdges[edge.data].Stroke = blue;
+                            drawableEdges[edge.data].Stroke = yellow;
                         }
                     }
 
+                    //chooese a start vertex that has more than 1 neighbour
+                    Vertex startV = null;
+                    foreach (Vertex v in mst.GetVertices())
+                    {
+                        if (v.neighbours.Count > 1) startV = v;
+                    }
+                    if (startV == null) startV = mst.getRandomVertex();
+
+                    validTree.Content = !ca.checkCycle(mst,startV);
+                    
+                    if (mst.GetEdges().Count != mst.GetVertices().Count - 1) { validTree.Content = "false"; }
                     //show mst weight
                     mstWeight.Content = mst.getGraphWeight();
                 }
@@ -141,7 +152,7 @@ namespace MSTapplication
                     {
                         foreach (Edge edge in v.neighbours)
                         {
-                            drawableEdges[edge.data].Stroke = blue;
+                            drawableEdges[edge.data].Stroke = yellow;
                         }
                     }
 
@@ -184,7 +195,7 @@ namespace MSTapplication
                     {
                         foreach (Edge edge in v.neighbours)
                         {
-                            drawableEdges[edge.data].Stroke = blue;
+                            drawableEdges[edge.data].Stroke = yellow;
                         }
                     }
 
@@ -222,7 +233,7 @@ namespace MSTapplication
                     {
                         foreach (Edge edge in v.neighbours)
                         {
-                            drawableEdges[edge.data].Stroke = blue;
+                            drawableEdges[edge.data].Stroke = yellow;
                         }
                     }
 
@@ -261,7 +272,7 @@ namespace MSTapplication
                 {
                     foreach (Edge edge in v.neighbours)
                     {
-                        drawableEdges[edge.data].Stroke = blue;
+                        drawableEdges[edge.data].Stroke = yellow;
                     }
                 }
 

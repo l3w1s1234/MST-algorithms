@@ -283,7 +283,16 @@ namespace GA
 
             var ca = new classicAlgorithms();
 
-            if (ca.checkCycle(temp, temp.getRandomVertex()))
+            Vertex startV = null;
+            //chooese a start vertex that has more than 1 neighbour
+            foreach(Vertex v in temp.GetVertices())
+            {
+                if (v.neighbours.Count > 1) startV = v;
+            }
+            if (startV == null) startV = temp.getRandomVertex();
+            
+
+            if (ca.checkCycle(temp, startV) && startV != null)
             {
                 fitness += MaxFitness;
                 actualtree = false;

@@ -25,6 +25,8 @@
             <Label x:Name="graphWeight" ></Label>
             <Label Content="MST Weight:" ></Label>
             <Label x:Name="mstWeight" ></Label>
+            <Label Content="Valid Tree:" ></Label>
+            <Label x:Name="validTree" ></Label>
         </ToolBar>
         <Grid>
             <Grid.ColumnDefinitions>
