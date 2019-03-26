@@ -66,6 +66,8 @@ namespace MSTapplication
 
         private SolidColorBrush yellow= new SolidColorBrush();
 
+        double lineThickness = 1;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -80,6 +82,7 @@ namespace MSTapplication
             foreach (KeyValuePair<string,Line> kvp in drawableEdges)
             {
                 kvp.Value.Stroke = black;
+                kvp.Value.StrokeThickness = lineThickness;
             }
 
             Graph mst = null;
@@ -90,13 +93,19 @@ namespace MSTapplication
                 
                 try
                 {
+                    var watch = System.Diagnostics.Stopwatch.StartNew();
                     mst = ga.run(int.Parse(popSize.Text), ref mainGraph, int.Parse(iterations.Text));
+                    watch.Stop();
+                    var elapsedMs = watch.ElapsedMilliseconds;
+                    timeTaken.Content = elapsedMs;
+
                     //colour the edges
                     foreach (Vertex v in mst.GetVertices())
                     {
                         foreach (Edge edge in v.neighbours)
                         {
                             drawableEdges[edge.data].Stroke = yellow;
+                            drawableEdges[edge.data].StrokeThickness = 3;
                         }
                     }
 
@@ -131,6 +140,7 @@ namespace MSTapplication
             foreach (KeyValuePair<string, Line> kvp in drawableEdges)
             {
                 kvp.Value.Stroke = black;
+                kvp.Value.StrokeThickness = lineThickness;
             }
 
             Graph mst = null;
@@ -146,13 +156,19 @@ namespace MSTapplication
 
                     if(n1.Substring(0,1) != "_") { n1 = "_" + n1; }
                     if (n2.Substring(0, 1) != "_") { n2 = "_" + n2; }
-                    mst = ca.dijkstra(n1, n2 ,ref mainGraph);
+
+                    var watch = System.Diagnostics.Stopwatch.StartNew();
+                    mst = ca.dijkstra(n1, n2, ref mainGraph);
+                    watch.Stop();
+                    var elapsedMs = watch.ElapsedMilliseconds;
+                    timeTaken.Content = elapsedMs;
                     //colour the edges
                     foreach (Vertex v in mst.GetVertices())
                     {
                         foreach (Edge edge in v.neighbours)
                         {
                             drawableEdges[edge.data].Stroke = yellow;
+                            drawableEdges[edge.data].StrokeThickness = 3;
                         }
                     }
 
@@ -175,6 +191,7 @@ namespace MSTapplication
             foreach (KeyValuePair<string, Line> kvp in drawableEdges)
             {
                 kvp.Value.Stroke = black;
+                kvp.Value.StrokeThickness = lineThickness;
             }
 
             Graph mst = null;
@@ -189,13 +206,19 @@ namespace MSTapplication
 
                     if (n1.Substring(0, 1) != "_") { n1 = "_" + n1; }
 
+                    var watch = System.Diagnostics.Stopwatch.StartNew();
                     mst = ca.dijkstraNoDest(n1, ref mainGraph);
+                    watch.Stop();
+                    var elapsedMs = watch.ElapsedMilliseconds;
+                    timeTaken.Content = elapsedMs;
+
                     //colour the edges
                     foreach (Vertex v in mst.GetVertices())
                     {
                         foreach (Edge edge in v.neighbours)
                         {
                             drawableEdges[edge.data].Stroke = yellow;
+                            drawableEdges[edge.data].StrokeThickness = 3;
                         }
                     }
 
@@ -214,10 +237,11 @@ namespace MSTapplication
         private void Kruskal_Click(object sender, RoutedEventArgs e)
         {
             SolidColorBrush black = new SolidColorBrush();
-            black.Color = Color.FromRgb(0, 0, 0);
+            black.Color = Color.FromRgb(0,0,0);
             foreach (KeyValuePair<string, Line> kvp in drawableEdges)
             {
                 kvp.Value.Stroke = black;
+                kvp.Value.StrokeThickness = lineThickness;
             }
             Graph mst = null;
 
@@ -227,13 +251,19 @@ namespace MSTapplication
 
                 try
                 {
-                    mst = ca.kruskal(ref mainGraph);
+                    var watch = System.Diagnostics.Stopwatch.StartNew();
+                     mst = ca.kruskal(ref mainGraph);
+                    watch.Stop();
+                    var elapsedMs = watch.ElapsedMilliseconds;
+                    timeTaken.Content = elapsedMs;
+
                     //colour the edges
                     foreach (Vertex v in mst.GetVertices())
                     {
                         foreach (Edge edge in v.neighbours)
                         {
                             drawableEdges[edge.data].Stroke = yellow;
+                            drawableEdges[edge.data].StrokeThickness = 3;
                         }
                     }
 
@@ -256,6 +286,7 @@ namespace MSTapplication
             foreach (KeyValuePair<string, Line> kvp in drawableEdges)
             {
                 kvp.Value.Stroke = black;
+                kvp.Value.StrokeThickness = lineThickness;
             }
 
             SolidColorBrush solidColorBrush = new SolidColorBrush();
@@ -265,7 +296,12 @@ namespace MSTapplication
             //as long as there are edges perform algorithm
             if (mainGraph.GetEdges().Count != 0)
             {
+
+                var watch = System.Diagnostics.Stopwatch.StartNew();
                 mst = ca.boruvka(ref mainGraph);
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
+                timeTaken.Content = elapsedMs;
 
                 //colour the edges
                 foreach (Vertex v in mst.GetVertices())
@@ -273,6 +309,7 @@ namespace MSTapplication
                     foreach (Edge edge in v.neighbours)
                     {
                         drawableEdges[edge.data].Stroke = yellow;
+                        drawableEdges[edge.data].StrokeThickness = 3;
                     }
                 }
 
@@ -471,6 +508,15 @@ namespace MSTapplication
                         var bf = new BinaryFormatter();
                         mainGraph = (Graph)bf.Deserialize(fs);
                         fs.Close();
+
+                        if (mainGraph.GetVertices().Count > 40)
+                        {
+                            lineThickness = 0.2;
+                        }
+                        else
+                        {
+                            lineThickness = 1;
+                        }
                         //put graph to screen using random coordinates
                         randomEllipseEdges();
                     }
@@ -489,6 +535,15 @@ namespace MSTapplication
                         var fileContents = reader.ReadToEnd();
                         mainGraph = JsonConvert.DeserializeObject<Graph>(fileContents);
                         reader.Close();
+
+                        if (mainGraph.GetVertices().Count > 40)
+                        {
+                            lineThickness = 0.2;
+                        }
+                        else
+                        {
+                            lineThickness = 1;
+                        }
                         //put graph to screen using random coordinates
                         randomEllipseEdges();
                     }
@@ -531,6 +586,14 @@ namespace MSTapplication
                             k++;
                         }
 
+                        if(mainGraph.GetVertices().Count > 40)
+                        {
+                            lineThickness = 0.2;
+                        }
+                        else
+                        {
+                            lineThickness = 1;
+                        }
 
                         randomEllipseEdges();
                     }
@@ -712,7 +775,7 @@ namespace MSTapplication
             edge.Y1 = y1;
             edge.X2 = x2;
             edge.Y2 = y2;
-            edge.StrokeThickness = 1;
+            edge.StrokeThickness = lineThickness;
 
             return edge;
             
@@ -794,7 +857,7 @@ namespace MSTapplication
             edge.X2 = x2;
             edge.Y2 = y2;
 
-            edge.StrokeThickness = 1;
+            edge.StrokeThickness = lineThickness;
 
             edge.Name=edgeID;
 

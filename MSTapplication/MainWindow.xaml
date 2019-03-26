@@ -27,6 +27,8 @@
             <Label x:Name="mstWeight" ></Label>
             <Label Content="Valid Tree:" ></Label>
             <Label x:Name="validTree" ></Label>
+            <Label Content="Time Taken(ms):" ></Label>
+            <Label x:Name="timeTaken" ></Label>
         </ToolBar>
         <Grid>
             <Grid.ColumnDefinitions>

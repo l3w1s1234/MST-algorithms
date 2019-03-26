@@ -139,7 +139,7 @@ namespace ClassicAlgorithms
                     for (int i = components.Count -2 ; i >= 0; i--)
                     {
 
-                        if (i != prevComp)
+                        if (i != prevComp && prevComp > 0)
                         {
                             if (components[i].containsVertices(components[prevComp].GetVertices()))
                             {
