@@ -48,8 +48,7 @@ namespace ClassicAlgorithms
             }
 
             Edge minEdge;
-            int i;
-            int prev;
+
             //loop through while there are more than 1 component
             while (components.Count > 1)
             {
@@ -59,9 +58,6 @@ namespace ClassicAlgorithms
                 foreach(Graph comp in components)
                 {
                     minEdge = null;
-
-                    
-                   
                         //find the smallest edge
                         foreach (Vertex v in comp.GetVertices())
                         {

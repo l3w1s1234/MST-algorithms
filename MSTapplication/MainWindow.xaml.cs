@@ -45,6 +45,7 @@ namespace MSTapplication
         //this is so that placing nodes isnt re-enabled when hovering over node
         private bool nodeHoverPlaceable = false;
 
+        private bool drawEdges = true;
         
         private bool dragable = false;
 
@@ -100,13 +101,53 @@ namespace MSTapplication
                     timeTaken.Content = elapsedMs;
 
                     //colour the edges
-                    foreach (Vertex v in mst.GetVertices())
+                    if (drawEdges)
                     {
-                        foreach (Edge edge in v.neighbours)
+                        foreach (Vertex v in mst.GetVertices())
                         {
-                            drawableEdges[edge.data].Stroke = yellow;
-                            drawableEdges[edge.data].StrokeThickness = 3;
+                            foreach (Edge edge in v.neighbours)
+                            {
+                                drawableEdges[edge.data].Stroke = yellow;
+                                drawableEdges[edge.data].StrokeThickness = 3;
+                            }
                         }
+                    }
+                    else
+                    {
+                        if (drawableEdges.Count > 0)
+                        {
+                            foreach (KeyValuePair<string, Line> kvp in drawableEdges)
+                            {
+                                display.Children.Remove(kvp.Value);
+                            }
+                            drawableEdges.Clear();
+                        }
+
+                        foreach (Vertex v in mst.GetVertices())
+                        {
+                            foreach (Edge ed in v.neighbours)
+                            {
+                                var x1 = Canvas.GetLeft(drawableNodes[ed.node1]) + (drawableNodes[ed.node1].Width / 2);
+                                var y1 = Canvas.GetTop(drawableNodes[ed.node1]) + (drawableNodes[ed.node1].Height / 2);
+                                var x2 = Canvas.GetLeft(drawableNodes[ed.node2]) + (drawableNodes[ed.node2].Width / 2);
+                                var y2 = Canvas.GetTop(drawableNodes[ed.node2]) + (drawableNodes[ed.node2].Height / 2);
+
+                                var edge = getEdge(x1, y1, x2, y2);
+
+                                edge.Name = ed.data;
+                                edge.Stroke = yellow;
+                                edge.StrokeThickness = 3;
+
+                                if (!drawableEdges.ContainsKey(ed.data))
+                                {
+                                    drawableEdges.Add(ed.data, edge);
+                                    display.Children.Add(edge);
+                                }
+
+
+                            }
+                        }
+
                     }
 
                     //chooese a start vertex that has more than 1 neighbour
@@ -162,14 +203,55 @@ namespace MSTapplication
                     watch.Stop();
                     var elapsedMs = watch.ElapsedMilliseconds;
                     timeTaken.Content = elapsedMs;
+
                     //colour the edges
-                    foreach (Vertex v in mst.GetVertices())
+                    if (drawEdges)
                     {
-                        foreach (Edge edge in v.neighbours)
+                        foreach (Vertex v in mst.GetVertices())
                         {
-                            drawableEdges[edge.data].Stroke = yellow;
-                            drawableEdges[edge.data].StrokeThickness = 3;
+                            foreach (Edge edge in v.neighbours)
+                            {
+                                drawableEdges[edge.data].Stroke = yellow;
+                                drawableEdges[edge.data].StrokeThickness = 3;
+                            }
                         }
+                    }
+                    else
+                    {
+                        if (drawableEdges.Count > 0)
+                        {
+                            foreach (KeyValuePair<string, Line> kvp in drawableEdges)
+                            {
+                                display.Children.Remove(kvp.Value);
+                            }
+                            drawableEdges.Clear();
+                        }
+
+                        foreach (Vertex v in mst.GetVertices())
+                        {
+                            foreach (Edge ed in v.neighbours)
+                            {
+                                var x1 = Canvas.GetLeft(drawableNodes[ed.node1]) + (drawableNodes[ed.node1].Width / 2);
+                                var y1 = Canvas.GetTop(drawableNodes[ed.node1]) + (drawableNodes[ed.node1].Height / 2);
+                                var x2 = Canvas.GetLeft(drawableNodes[ed.node2]) + (drawableNodes[ed.node2].Width / 2);
+                                var y2 = Canvas.GetTop(drawableNodes[ed.node2]) + (drawableNodes[ed.node2].Height / 2);
+
+                                var edge = getEdge(x1, y1, x2, y2);
+
+                                edge.Name = ed.data;
+                                edge.Stroke = yellow;
+                                edge.StrokeThickness = 3;
+
+                                if (!drawableEdges.ContainsKey(ed.data))
+                                {
+                                    drawableEdges.Add(ed.data, edge);
+                                    display.Children.Add(edge);
+                                }
+
+
+                            }
+                        }
+
                     }
 
                     //show mst weight
@@ -213,13 +295,54 @@ namespace MSTapplication
                     timeTaken.Content = elapsedMs;
 
                     //colour the edges
-                    foreach (Vertex v in mst.GetVertices())
+                    if (drawEdges)
                     {
-                        foreach (Edge edge in v.neighbours)
+                        foreach (Vertex v in mst.GetVertices())
                         {
-                            drawableEdges[edge.data].Stroke = yellow;
-                            drawableEdges[edge.data].StrokeThickness = 3;
+                            foreach (Edge edge in v.neighbours)
+                            {
+                                drawableEdges[edge.data].Stroke = yellow;
+                                drawableEdges[edge.data].StrokeThickness = 3;
+                            }
                         }
+
+                    }
+                    else
+                    {
+                        if (drawableEdges.Count > 0)
+                        {
+                            foreach (KeyValuePair<string, Line> kvp in drawableEdges)
+                            {
+                                display.Children.Remove(kvp.Value);
+                            }
+                            drawableEdges.Clear();
+                        }
+
+                        foreach (Vertex v in mst.GetVertices())
+                        {
+                            foreach (Edge ed in v.neighbours)
+                            {
+                                var x1 = Canvas.GetLeft(drawableNodes[ed.node1]) + (drawableNodes[ed.node1].Width / 2);
+                                var y1 = Canvas.GetTop(drawableNodes[ed.node1]) + (drawableNodes[ed.node1].Height / 2);
+                                var x2 = Canvas.GetLeft(drawableNodes[ed.node2]) + (drawableNodes[ed.node2].Width / 2);
+                                var y2 = Canvas.GetTop(drawableNodes[ed.node2]) + (drawableNodes[ed.node2].Height / 2);
+
+                                var edge = getEdge(x1, y1, x2, y2);
+
+                                edge.Name = ed.data;
+                                edge.Stroke = yellow;
+                                edge.StrokeThickness = 3;
+
+                                if (!drawableEdges.ContainsKey(ed.data))
+                                {
+                                    drawableEdges.Add(ed.data, edge);
+                                    display.Children.Add(edge);
+                                }
+
+
+                            }
+                        }
+
                     }
 
                     //show mst weight
@@ -258,14 +381,55 @@ namespace MSTapplication
                     timeTaken.Content = elapsedMs;
 
                     //colour the edges
-                    foreach (Vertex v in mst.GetVertices())
+                    if(drawEdges)
                     {
-                        foreach (Edge edge in v.neighbours)
+                        foreach (Vertex v in mst.GetVertices())
                         {
-                            drawableEdges[edge.data].Stroke = yellow;
-                            drawableEdges[edge.data].StrokeThickness = 3;
+                            foreach (Edge edge in v.neighbours)
+                            {
+                                drawableEdges[edge.data].Stroke = yellow;
+                                drawableEdges[edge.data].StrokeThickness = 3;
+                            }
                         }
                     }
+                    else
+                    {
+                        if(drawableEdges.Count > 0)
+                        {
+                            foreach(KeyValuePair<string,Line> kvp in drawableEdges)
+                            {
+                                display.Children.Remove(kvp.Value);
+                            }
+                            drawableEdges.Clear();
+                        }
+                        
+                        foreach (Vertex v in mst.GetVertices())
+                        {
+                            foreach (Edge ed in v.neighbours)
+                            {
+                                var x1 = Canvas.GetLeft(drawableNodes[ed.node1]) + (drawableNodes[ed.node1].Width / 2);
+                                var y1 = Canvas.GetTop(drawableNodes[ed.node1]) + (drawableNodes[ed.node1].Height / 2);
+                                var x2 = Canvas.GetLeft(drawableNodes[ed.node2]) + (drawableNodes[ed.node2].Width / 2);
+                                var y2 = Canvas.GetTop(drawableNodes[ed.node2]) + (drawableNodes[ed.node2].Height / 2);
+
+                                var edge = getEdge(x1, y1, x2, y2);
+
+                                edge.Name = ed.data;
+                                edge.Stroke = yellow;
+                                edge.StrokeThickness = 3;
+
+                                if (!drawableEdges.ContainsKey(ed.data))
+                                {
+                                    drawableEdges.Add(ed.data, edge);
+                                    display.Children.Add(edge);
+                                }
+
+                            }
+                        }
+                       
+                    }
+                    
+                    
 
                     //show mst weight
                     mstWeight.Content = mst.getGraphWeight();
@@ -304,14 +468,54 @@ namespace MSTapplication
                 timeTaken.Content = elapsedMs;
 
                 //colour the edges
-                foreach (Vertex v in mst.GetVertices())
+                if (drawEdges)
                 {
-                    foreach (Edge edge in v.neighbours)
+                    foreach (Vertex v in mst.GetVertices())
                     {
-                        drawableEdges[edge.data].Stroke = yellow;
-                        drawableEdges[edge.data].StrokeThickness = 3;
+                        foreach (Edge edge in v.neighbours)
+                        {
+                            drawableEdges[edge.data].Stroke = yellow;
+                            drawableEdges[edge.data].StrokeThickness = 3;
+                        }
                     }
                 }
+                else
+                {
+                    if (drawableEdges.Count > 0)
+                    {
+                        foreach (KeyValuePair<string, Line> kvp in drawableEdges)
+                        {
+                            display.Children.Remove(kvp.Value);
+                        }
+                        drawableEdges.Clear();
+                    }
+
+                    foreach (Vertex v in mst.GetVertices())
+                    {
+                        foreach (Edge ed in v.neighbours)
+                        {
+                            var x1 = Canvas.GetLeft(drawableNodes[ed.node1]) + (drawableNodes[ed.node1].Width / 2);
+                            var y1 = Canvas.GetTop(drawableNodes[ed.node1]) + (drawableNodes[ed.node1].Height / 2);
+                            var x2 = Canvas.GetLeft(drawableNodes[ed.node2]) + (drawableNodes[ed.node2].Width / 2);
+                            var y2 = Canvas.GetTop(drawableNodes[ed.node2]) + (drawableNodes[ed.node2].Height / 2);
+
+                            var edge = getEdge(x1, y1, x2, y2);
+
+                            edge.Name = ed.data;
+                            edge.Stroke = yellow;
+                            edge.StrokeThickness = 3;
+
+                            if (!drawableEdges.ContainsKey(ed.data))
+                            {
+                                drawableEdges.Add(ed.data, edge);
+                                display.Children.Add(edge);
+                            }
+
+                        }
+                    }
+
+                }
+
 
                 //show mst weight
                 mstWeight.Content = mst.getGraphWeight();
@@ -517,6 +721,9 @@ namespace MSTapplication
                         {
                             lineThickness = 1;
                         }
+                        //dont allow edges to be drawnfor performance
+                        if (mainGraph.GetVertices().Count >= 100) drawEdges = false;
+                        else { drawEdges = true; }
                         //put graph to screen using random coordinates
                         randomEllipseEdges();
                     }
@@ -544,6 +751,9 @@ namespace MSTapplication
                         {
                             lineThickness = 1;
                         }
+                        //dont allow edges to be drawnfor performance
+                        if (mainGraph.GetVertices().Count >= 100) drawEdges = false;
+                        else { drawEdges = true; }
                         //put graph to screen using random coordinates
                         randomEllipseEdges();
                     }
@@ -595,11 +805,15 @@ namespace MSTapplication
                             lineThickness = 1;
                         }
 
+                        //dont allow edges to be drawnfor performance
+                        if (mainGraph.GetVertices().Count >= 100) drawEdges = false;
+                        else { drawEdges = true; }
+
                         randomEllipseEdges();
                     }
                     catch
                     {
-
+                        System.Diagnostics.Debug.WriteLine("Load failed");
                     }
                 }
 
@@ -730,6 +944,8 @@ namespace MSTapplication
             }
 
             //draw edges
+            if(drawEdges)
+            {
                 foreach (Edge e in mainGraph.GetEdges())
                 {
                     if (!drawableEdges.ContainsKey(e.data))
@@ -739,7 +955,7 @@ namespace MSTapplication
                         weight.Name = e.data;
                         weight.Content = e.weight;
                         weight.FontSize = 10;
-                        
+
                         var x1 = Canvas.GetLeft(drawableNodes[e.node1]) + (drawableNodes[e.node1].Width / 2);
                         var y1 = Canvas.GetTop(drawableNodes[e.node1]) + (drawableNodes[e.node1].Height / 2);
                         var x2 = Canvas.GetLeft(drawableNodes[e.node2]) + (drawableNodes[e.node2].Width / 2);
@@ -748,7 +964,7 @@ namespace MSTapplication
                         var edge = getEdge(x1, y1, x2, y2);
 
                         weight.SetValue(Canvas.LeftProperty, (x1 + x2) / 2);
-                        weight.SetValue(Canvas.TopProperty, ((y1 + y2) / 2)-5);
+                        weight.SetValue(Canvas.TopProperty, ((y1 + y2) / 2) - 5);
                         edge.Name = e.data;
 
                         edgeWeights.Add(e.data, weight);
@@ -757,6 +973,8 @@ namespace MSTapplication
                         display.Children.Add(edge);
                     }
                 }
+            }
+                
             
                 
 
@@ -824,7 +1042,9 @@ namespace MSTapplication
                     var y2 = Canvas.GetTop(drawableNodes[node2.data]) + (drawableNodes[node2.data].Height / 2);
 
                     mainGraph.addEdge(weight, node1.data, node2.data,edgeID);
-                    drawEdge(x1,y1,x2,y2,weight.ToString());
+
+                    if(drawEdges) drawEdge(x1, y1, x2, y2, weight.ToString());
+
                 }
                 graphWeight.Content = mainGraph.getGraphWeight();
             }
@@ -1044,7 +1264,8 @@ namespace MSTapplication
                 nodeName.SetValue(Canvas.LeftProperty, originalPosition.X - ellipse.Width);
                 nodeName.SetValue(Canvas.TopProperty, originalPosition.Y - ellipse.Height);
 
-                updateEdge(node);
+                if(drawEdges) updateEdge(node);
+
             }
             
         }
@@ -1093,7 +1314,7 @@ namespace MSTapplication
             nodeNames[ellipse.Name].SetValue(Canvas.TopProperty, top - ellipse.Height);
 
             //check that there are any connected edges and update their postion
-            if (node.hasNeighbours())
+            if (node.hasNeighbours() && drawEdges)
             {
                 updateEdge(node);
             }
@@ -1204,9 +1425,12 @@ namespace MSTapplication
             }
 
             //update lines/edges
-            foreach(Vertex n in mainGraph.GetVertices())
+            if (drawEdges)
             {
-                updateEdge(n);
+                foreach (Vertex n in mainGraph.GetVertices())
+                {
+                    updateEdge(n);
+                }
             }
             
         }
