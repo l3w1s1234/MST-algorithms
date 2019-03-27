@@ -37,6 +37,7 @@ namespace ClassicAlgorithms
         public Graph boruvka(ref Graph g)
         {
             List<Graph> components = new List<Graph>();
+            List<KeyValuePair<int,int>> mergeIndex = new List<KeyValuePair<int, int>>();
 
             //set up each component with single vertices
             foreach(Vertex v in g.GetVertices())
@@ -46,142 +47,100 @@ namespace ClassicAlgorithms
                 components.Add(graph);
             }
 
-
+            Edge minEdge;
+            int i;
+            int prev;
             //loop through while there are more than 1 component
             while (components.Count > 1)
             {
-                //loop through each component to fine the minimum edge
-                foreach (Graph graph in components)
+
+             
+                //loop through each component
+                foreach(Graph comp in components)
                 {
-                    Edge minEdge = null;
+                    minEdge = null;
 
-                    //check each vertex in componenet
-                    foreach (Vertex v in graph.GetVertices())
-                    {
-                        //try and find the minimum edge not connected to the component
-                        foreach (Edge edge in g.GetVertex(v.data).neighbours)
+                    
+                   
+                        //find the smallest edge
+                        foreach (Vertex v in comp.GetVertices())
                         {
-                            if (minEdge == null) minEdge = edge;
-
-                            //check that the edge isnt already contained within the graph and compare weight
-                            if (v.data == edge.node1)
+                            foreach (Edge e in g.GetVertex(v.data).neighbours)
                             {
-                                if (!v.hasEdge(edge.data))
+                                if (minEdge == null) minEdge = e;
+                                
+                                if(v.data != e.node1)
                                 {
-                                    if (minEdge.weight > edge.weight)
+                                    
+                                    if (minEdge.weight > e.weight && !comp.hasVertex(e.node1))
                                     {
-                                        minEdge = edge;
+                                        minEdge = e;
                                     }
-
-
                                 }
-                            }
-                            else if (v.data == edge.node2)
-                            {
-                                if (!v.hasEdge(edge.data))
+                                else
                                 {
-                                    if (minEdge.weight > edge.weight)
+                                    
+                                    if (minEdge.weight > e.weight && !comp.hasVertex(e.node2))
                                     {
-                                        minEdge = edge;
+                                        minEdge = e;
                                     }
                                 }
                             }
-                        }
-                       
-                    }
 
-                    //add edge and nodes to components
-                    if(minEdge != null)
-                    {
-                        if (graph.hasVertex(minEdge.node1))
-                        {
-                            if (!graph.hasVertex(minEdge.node2))
-                            {
-                                graph.addNode(minEdge.node2);
-                            }
-                            if(!graph.GetVertex(minEdge.node1).hasEdge(minEdge.data))
-                                {
-                                graph.addEdge(minEdge.weight,minEdge.node1,minEdge.node2,minEdge.data);
-                                }
-                            
                         }
-                        else if (graph.hasVertex(minEdge.node2))
-                        {
-                            if (!graph.hasVertex(minEdge.node1))
-                            {
-                                graph.addNode(minEdge.node1);
-                            }
-                            if(!graph.GetVertex(minEdge.node2).hasEdge(minEdge.data))
-                                {
-                                graph.addEdge(minEdge.weight,minEdge.node1,minEdge.node2,minEdge.data);
-                                }
-                            
-                        }
-                    }
-                    
-                    
 
+                        //add edge to component
+                        if(minEdge != null)
+                        {
+                            if (!comp.hasVertex(minEdge.node1)) { comp.addNode(minEdge.node1); }
+                            if (!comp.hasVertex(minEdge.node2)) { comp.addNode(minEdge.node2); }
+                            if (!comp.hasEdge(minEdge))
+                            {
+                                comp.addEdge(minEdge.weight, minEdge.node1, minEdge.node2, minEdge.data);
+                            }
+                        }
+                   
                 }
 
+
+                //check for all mergeable components
+                for(int k = 0; k < components.Count-1;k++)
+                {
+                    for(int l = k+1; l < components.Count; l++)
+                    {
+                        if(components[k].containsVertices(components[l].GetVertices()))
+                        {
+                            mergeIndex.Add(new KeyValuePair<int, int>(k,l));
+                        }
+                    }
+                }
+
+
+                //remove components that are connected to other components
+                if(mergeIndex.Count > 0)
+                {
+                    for(int k = mergeIndex.Count - 1; k>=0; k--)
+                    {
+                        components[mergeIndex[k].Value].mergeGraph(components[mergeIndex[k].Key]);
+                    }
+                    for (int k = mergeIndex.Count - 1; k >= 0; k--)
+                    {
+                        components.RemoveAt(mergeIndex[k].Key);
+                    }
+                        mergeIndex.Clear();
+                }
 
                 
-                //merge components if there are 2 left
-                if (components.Count == 2)
+
+                //merge the last two indexes if there are only two left
+                if(components.Count == 2)
                 {
                     components[0].mergeGraph(components[1]);
+                    components.RemoveAt(1);
                 }
-                int prevComp = components.Count - 1;
-                //merge components that are connected to each other
-                while (prevComp > 0)
-                {
-                    
-                    //loop down components
-                    for (int i = components.Count -2 ; i >= 0; i--)
-                    {
 
-                        if (i != prevComp && prevComp > 0)
-                        {
-                            if (components[i].containsVertices(components[prevComp].GetVertices()))
-                            {
-                                components[i].mergeGraph(components[prevComp]);
-                                components.RemoveAt(prevComp);
-                                prevComp--;
-                            }
-                        }
-                       
-                        
-                    }
 
-                     prevComp--;
-
-                }
             }
-
-            //check that there are no more than 2 edges connected to 1 node
-            foreach (Vertex n in components[0].GetVertices())
-            {
-                if (n.neighbours.Count > 2)
-                {
-                    
-                    while (n.neighbours.Count > 2)
-                    {
-                        Edge maxEdge = null;
-                        foreach (Edge e in n.neighbours)
-                        {
-                            if (maxEdge == null) maxEdge = e;
-                            else if(maxEdge.weight < e.weight)
-                            {
-                                maxEdge = e;
-                            }
-
-                        }
-                        n.neighbours.Remove(maxEdge);
-                    }
-
-                }
-            }
-
-            components[0].edges = components[0].GetEdges().Count;
             return components[0];
         }
 
@@ -508,7 +467,7 @@ namespace ClassicAlgorithms
 
         }
 
-        //meant to be used with kruskal, but can be used with other algorithms to remove cycles
+        //meant to be used with kruskal, but can be used with other algorithms to check for cycles
         public bool checkCycle(Graph g, Vertex start)
         {//check for a cycle
             Dictionary<Vertex, bool> visited = new Dictionary<Vertex, bool>();
