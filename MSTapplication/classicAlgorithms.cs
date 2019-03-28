@@ -34,13 +34,14 @@ namespace ClassicAlgorithms
         }
 
         //execute the boruvka algorithm and returns mst
+        //execute the boruvka algorithm and returns mst
         public Graph boruvka(ref Graph g)
         {
             List<Graph> components = new List<Graph>();
-            List<KeyValuePair<int,int>> mergeIndex = new List<KeyValuePair<int, int>>();
+            List<KeyValuePair<int, int>> mergeIndex = new List<KeyValuePair<int, int>>();
 
             //set up each component with single vertices
-            foreach(Vertex v in g.GetVertices())
+            foreach (Vertex v in g.GetVertices())
             {
                 var graph = new Graph();
                 graph.addNode(v.data);
@@ -53,72 +54,72 @@ namespace ClassicAlgorithms
             while (components.Count > 1)
             {
 
-             
+
                 //loop through each component
-                foreach(Graph comp in components)
+                foreach (Graph comp in components)
                 {
                     minEdge = null;
-                        //find the smallest edge
-                        foreach (Vertex v in comp.GetVertices())
+                    //find the smallest edge
+                    foreach (Vertex v in comp.GetVertices())
+                    {
+                        foreach (Edge e in g.GetVertex(v.data).neighbours)
                         {
-                            foreach (Edge e in g.GetVertex(v.data).neighbours)
-                            {
-                                if (minEdge == null) minEdge = e;
-                                
-                                if(v.data != e.node1)
-                                {
+                            if (minEdge == null) minEdge = e;
 
-                                    if (minEdge.weight > e.weight && !comp.hasVertex(e.node1))
-                                    {
-                                        minEdge = e;
-                                    }
-                                }
-                                else
+                            if (v.data != e.node1)
+                            {
+
+                                if (minEdge.weight > e.weight && !comp.hasVertex(e.node1))
                                 {
-                                    if (minEdge.weight > e.weight && !comp.hasVertex(e.node2) )
-                                    {
-                                        minEdge = e;
-                                    }
+                                    minEdge = e;
                                 }
                             }
-
-                        }   
-
-                        //add edge to component
-                        if(minEdge != null)
-                        {
-                            if (!comp.hasVertex(minEdge.node1)) { comp.addNode(minEdge.node1); }
-                            if (!comp.hasVertex(minEdge.node2)) { comp.addNode(minEdge.node2); }
-                            if (!comp.hasEdge(minEdge))
+                            else
                             {
-                                comp.addEdge(minEdge.weight, minEdge.node1, minEdge.node2, minEdge.data);
+                                if (minEdge.weight > e.weight && !comp.hasVertex(e.node2))
+                                {
+                                    minEdge = e;
+                                }
                             }
+                        }
 
-                            if(components.IndexOf(comp) > 0)
+                    }
+
+                    //add edge to component
+                    if (minEdge != null)
+                    {
+                        if (!comp.hasVertex(minEdge.node1)) { comp.addNode(minEdge.node1); }
+                        if (!comp.hasVertex(minEdge.node2)) { comp.addNode(minEdge.node2); }
+                        if (!comp.hasEdge(minEdge))
+                        {
+                            comp.addEdge(minEdge.weight, minEdge.node1, minEdge.node2, minEdge.data);
+                        }
+
+                        if (components.IndexOf(comp) > 0)
                         {
                             for (int k = 0; k < components.IndexOf(comp); k++)
                             {
-                                if (components[k].hasVertex(minEdge.node1) && components[k].hasVertex(minEdge.node2))
+                                if (components[k].hasVertex(minEdge.node1) || components[k].hasVertex(minEdge.node2))
                                 {
-                                    mergeIndex.Add(new KeyValuePair<int, int>(components.IndexOf(comp),k));
+                                    mergeIndex.Add(new KeyValuePair<int, int>(components.IndexOf(comp), k));
                                     break;
                                 }
-                                
+
                             }
                         }
-                            
-                        }
-                   
+
+                    }
+
                 }
 
 
-               
+
 
 
                 //remove components that are connected to other components
-                if(mergeIndex.Count > 0)
+                if (mergeIndex.Count > 0)
                 {
-                    for(int k = mergeIndex.Count - 1; k>=0; k--)
+                    for (int k = mergeIndex.Count - 1; k >= 0; k--)
                     {
                         components[mergeIndex[k].Value].mergeGraph(components[mergeIndex[k].Key]);
                     }
@@ -126,16 +127,16 @@ namespace ClassicAlgorithms
                     {
                         components.RemoveAt(mergeIndex[k].Key);
                     }
-                        mergeIndex.Clear();
+                    mergeIndex.Clear();
                 }
 
 
                 //merge the last two components
-                if(components.Count == 2)
+                if (components.Count == 2)
                 {
                     Edge min = null;
                     //select the component with least edges
-                    if(components[0].edges > components[1].edges)
+                    if (components[0].edges > components[1].edges)
                     {
                         //find the smallest edge
                         foreach (Vertex v in components[1].GetVertices())
@@ -152,7 +153,7 @@ namespace ClassicAlgorithms
                                 }
                             }
                         }
-                        
+
                         components[0].mergeGraph(components[1]);
                         components[0].addEdge(min.weight, min.node1, min.node2, min.data);
                         components.RemoveAt(1);
@@ -173,10 +174,10 @@ namespace ClassicAlgorithms
                                     }
                                     else if (min.weight > e.weight) min = e;
                                 }
-                                
+
                             }
                         }
-                       
+
                         components[1].mergeGraph(components[0]);
                         components[1].addEdge(min.weight, min.node1, min.node2, min.data);
                         components.RemoveAt(0);
@@ -184,11 +185,12 @@ namespace ClassicAlgorithms
                     }
                 }
 
-                
+
 
             }
             return components[0];
         }
+
 
 
         //execute the Dijkstra algorithm
