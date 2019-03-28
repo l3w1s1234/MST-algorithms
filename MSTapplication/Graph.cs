@@ -55,6 +55,17 @@ namespace simpleGraph
             }
             return true;
         }
+
+        //check that graph contains a list of vertices
+        public bool containsAnyVertex(List<Vertex> vertices)
+        {
+            foreach (Vertex v in vertices)
+            {
+                if (nodes.ContainsKey(v.data)) return true;
+            }
+            return false;
+        }
+
         //returns a random vertex
         public Vertex getRandomVertex()
         {
@@ -208,6 +219,19 @@ namespace simpleGraph
                 if(!nodes.ContainsKey(n.Key))
                 {
                     nodes.Add(n.Key, n.Value);
+                }
+                else if(nodes.ContainsKey(n.Key))
+                {
+                    //add all the edges relatedto that node
+                    foreach(Edge e in n.Value.neighbours)
+                    {
+                        if (!nodes[n.Value.data].hasEdge(e.data)) {
+                            if (!nodes.ContainsKey(e.node1)) { addNode(e.node1); }
+                            if (!nodes.ContainsKey(e.node2)) { addNode(e.node2); }
+                            this.addEdge(e.weight, e.node1, e.node2, e.data);
+                                
+                                }
+                    }
                 }
             }
 

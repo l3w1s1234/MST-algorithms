@@ -68,6 +68,7 @@ namespace MSTapplication
         private SolidColorBrush yellow= new SolidColorBrush();
 
         double lineThickness = 1;
+        double size = 15;
 
         public MainWindow()
         {
@@ -99,6 +100,11 @@ namespace MSTapplication
                     watch.Stop();
                     var elapsedMs = watch.ElapsedMilliseconds;
                     timeTaken.Content = elapsedMs;
+
+                    //write time to desktop
+                    StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
+                    sw.WriteLine(elapsedMs);
+                    sw.Close();
 
                     //colour the edges
                     if (drawEdges)
@@ -204,6 +210,13 @@ namespace MSTapplication
                     var elapsedMs = watch.ElapsedMilliseconds;
                     timeTaken.Content = elapsedMs;
 
+                    //write time to desktop
+                    StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
+                    sw.WriteLine(elapsedMs);
+                    sw.Close();
+                    
+
+
                     //colour the edges
                     if (drawEdges)
                     {
@@ -294,6 +307,12 @@ namespace MSTapplication
                     var elapsedMs = watch.ElapsedMilliseconds;
                     timeTaken.Content = elapsedMs;
 
+                    //write time to desktop
+                    StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
+                    sw.WriteLine(elapsedMs);
+                    sw.Close();
+
+
                     //colour the edges
                     if (drawEdges)
                     {
@@ -380,8 +399,13 @@ namespace MSTapplication
                     var elapsedMs = watch.ElapsedMilliseconds;
                     timeTaken.Content = elapsedMs;
 
+                    //write time to desktop
+                    StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
+                    sw.WriteLine(elapsedMs);
+                    sw.Close();
+
                     //colour the edges
-                    if(drawEdges)
+                    if (drawEdges)
                     {
                         foreach (Vertex v in mst.GetVertices())
                         {
@@ -466,6 +490,12 @@ namespace MSTapplication
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
                 timeTaken.Content = elapsedMs;
+
+
+                //write time to desktop
+                StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
+                sw.WriteLine(elapsedMs);
+                sw.Close();
 
                 //colour the edges
                 if (drawEdges)
@@ -913,8 +943,8 @@ namespace MSTapplication
 
                 nodeEllipse.StrokeThickness = 1;
                 nodeEllipse.Stroke = Brushes.Black;
-                nodeEllipse.Width = 10;
-                nodeEllipse.Height = 10;
+                nodeEllipse.Width = size;
+                nodeEllipse.Height = size;
 
                 nodeEllipse.SetValue(Canvas.LeftProperty, x - (nodeEllipse.Width / 2));
                 nodeEllipse.SetValue(Canvas.TopProperty, y - (nodeEllipse.Height / 2));
@@ -1121,8 +1151,8 @@ namespace MSTapplication
 
             nodeEllipse.StrokeThickness = 1;
             nodeEllipse.Stroke = Brushes.Black;
-            nodeEllipse.Width = 10;
-            nodeEllipse.Height = 10;
+            nodeEllipse.Width = size;
+            nodeEllipse.Height = size;
 
             nodeEllipse.SetValue(Canvas.LeftProperty, x - (nodeEllipse.Width / 2));
             nodeEllipse.SetValue(Canvas.TopProperty, y - (nodeEllipse.Height / 2));
