@@ -6,26 +6,28 @@ using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace simpleGraph
+namespace MSTapplication
 {
-    [Serializable()]
-    class Vertex : ISerializable
+    namespace simpleGraph
     {
-        public String data { get; set; }
-        public LinkedList<Edge> neighbours;
-
-
-        
-        public Vertex(String d)
+        [Serializable()]
+        class Vertex : ISerializable
         {
-            neighbours = new LinkedList<Edge>();
-            data = d;
-            
-        }
+            public String data { get; set; }
+            public LinkedList<Edge> neighbours;
 
-        //set the weight of the edge
-        public void setNeighbourWeight(ref Vertex node, float weight)
-        {
+
+
+            public Vertex(String d)
+            {
+                neighbours = new LinkedList<Edge>();
+                data = d;
+
+            }
+
+            //set the weight of the edge
+            public void setNeighbourWeight(ref Vertex node, float weight)
+            {
                 foreach (Edge e in neighbours)
                 {
                     if (e.node1 == node.data || e.node2 == node.data)
@@ -33,119 +35,121 @@ namespace simpleGraph
                         e.weight = weight;
                     }
                 }
-        }
-
-        public Edge getNeighbourEdge(string nID)
-        {
-            Edge edge = null;
-            foreach (Edge e in neighbours)
-            {
-                if (e.node1 == nID|| e.node2 == nID)
-                {
-                    edge = e;
-                }
             }
 
-            return edge;
-        }
-
-        //add a neighbour to list
-        public void addNeighbour(Edge edge)
-        {
-            
-            neighbours.AddFirst(edge);
-        }
-
-        //returns true or false if node is a neighour
-        public Boolean hasNeighbour(string n)
-        {
-            foreach(Edge e in neighbours)
+            public Edge getNeighbourEdge(string nID)
             {
-                if(e.node1 == n || e.node2 == n)
+                Edge edge = null;
+                foreach (Edge e in neighbours)
                 {
-                    return true;
+                    if (e.node1 == nID || e.node2 == nID)
+                    {
+                        edge = e;
+                    }
                 }
+
+                return edge;
             }
-            return false;
-        }
 
-        //returns if edge already exits
-        public Boolean hasEdge(string eID)
-         {
-
-            foreach(Edge e in neighbours)
+            //add a neighbour to list
+            public void addNeighbour(Edge edge)
             {
-                if(e.data == eID)
+
+                neighbours.AddFirst(edge);
+            }
+
+            //returns true or false if node is a neighour
+            public Boolean hasNeighbour(string n)
+            {
+                foreach (Edge e in neighbours)
                 {
-                    return true;
+                    if (e.node1 == n || e.node2 == n)
+                    {
+                        return true;
+                    }
                 }
-            }
-            return false;
-         }
-
-        //returns true or false if node is any neighour
-        public Boolean hasNeighbours()
-        {
-            if(neighbours == null)
-            {
                 return false;
             }
-            else
-            {
-                return true;
-            }
-        }
-        //get a list of the neighbours  connected tyo this node
-        public LinkedList<Edge> getNeighbours()
-        {
-            return neighbours;
-        }
 
-        //get the edge with the edge ID
-        public Edge getEdge(string eID)
+            //returns if edge already exits
+            public Boolean hasEdge(string eID)
             {
-            Edge edge = null;
-            foreach(Edge e in neighbours)
+
+                foreach (Edge e in neighbours)
                 {
-                if(e.data == eID)
+                    if (e.data == eID)
                     {
-                       edge = e;
+                        return true;
                     }
                 }
-            return edge;
+                return false;
             }
 
-        //remove an edge from the list
-        public void removeEdge(String edgeID)
-        {
-            try
+            //returns true or false if node is any neighour
+            public Boolean hasNeighbours()
             {
-               var edge = getEdge(edgeID);
-                if(edge!= null)
+                if (neighbours == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            //get a list of the neighbours  connected tyo this node
+            public LinkedList<Edge> getNeighbours()
+            {
+                return neighbours;
+            }
+
+            //get the edge with the edge ID
+            public Edge getEdge(string eID)
+            {
+                Edge edge = null;
+                foreach (Edge e in neighbours)
+                {
+                    if (e.data == eID)
                     {
-                    neighbours.Remove(edge);
+                        edge = e;
                     }
-                   
-                
+                }
+                return edge;
             }
-            catch
+
+            //remove an edge from the list
+            public void removeEdge(String edgeID)
             {
-                System.Diagnostics.Debug.WriteLine("Removing edge failed");
+                try
+                {
+                    var edge = getEdge(edgeID);
+                    if (edge != null)
+                    {
+                        neighbours.Remove(edge);
+                    }
+
+
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine("Removing edge failed");
+                }
+
+
             }
-            
 
-        }
+            public void GetObjectData(SerializationInfo info, StreamingContext context)
+            {
+                info.AddValue("Name", data);
+                info.AddValue("Neighbours", neighbours);
+            }
 
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("Name", data);
-            info.AddValue("Neighbours", neighbours);
-        }
-
-        public Vertex(SerializationInfo info, StreamingContext context)
-        {
-            neighbours = (LinkedList<Edge>)info.GetValue("Neighbours", typeof(LinkedList<Edge>));
-            data = (string)info.GetValue("Name", typeof(string)); ;
+            public Vertex(SerializationInfo info, StreamingContext context)
+            {
+                neighbours = (LinkedList<Edge>)info.GetValue("Neighbours", typeof(LinkedList<Edge>));
+                data = (string)info.GetValue("Name", typeof(string)); ;
+            }
         }
     }
 }
+

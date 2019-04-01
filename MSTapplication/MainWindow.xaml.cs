@@ -14,21 +14,21 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using simpleGraph;
+using MSTapplication.simpleGraph;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Xml.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
-using ClassicAlgorithms;
-using GA;
+using MSTapplication.ClassicAlgorithms;
+using MSTapplication.GA;
 using System.Xml;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("UnitTestProject")]
 namespace MSTapplication
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    
     public partial class MainWindow : Window
     
 {

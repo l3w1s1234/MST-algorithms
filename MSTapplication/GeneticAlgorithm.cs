@@ -3,411 +3,415 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using simpleGraph;
-using ClassicAlgorithms;
+using MSTapplication.simpleGraph;
+using MSTapplication.ClassicAlgorithms;
 
-namespace GA
+namespace MSTapplication
 {
-
-   
-    class GeneticAlgorithm
+    namespace GA
     {
 
-        private Population population;
-        public int genCount;
 
-        private Individual fittest;
-        private Individual strongest;
-        private Individual secondFittest;
-        private Random rnd = new Random();
-
-        Graph temp;
-        public GeneticAlgorithm()
+        class GeneticAlgorithm
         {
 
-        }
+            private Population population;
+            public int genCount;
 
-        //run algorithm
-        public Graph run(int k, ref Graph graph,int iterations)
-        {
-            genCount = 0;
-            temp = graph;
-            population = new Population(); ;
-            float graphMaxFitness = graph.getGraphWeight();
-            population.init(k, ref graph, graphMaxFitness,rnd);
-            Graph mst = null;
-            
-            if (strongest== null)
+            private Individual fittest;
+            private Individual strongest;
+            private Individual secondFittest;
+            private Random rnd = new Random();
+
+            Graph temp;
+            public GeneticAlgorithm()
             {
-                strongest = population.getFittest();
-            }
-            else if(strongest.getFitness() > population.getFittest().getFitness())
-            {
-                strongest = population.getFittest();
+
             }
 
-            //perform algorithm while fitness > target weight
-            while (genCount < iterations)
+            //run algorithm
+            public Graph run(int k, ref Graph graph, int iterations)
             {
-                genCount++;   
-                //perform selection
-                selection();
+                genCount = 0;
+                temp = graph;
+                population = new Population(); ;
+                float graphMaxFitness = graph.getGraphWeight();
+                population.init(k, ref graph, graphMaxFitness, rnd);
+                Graph mst = null;
 
-
-                int lestFitI = population.getLeastFittestIndex();
-                
-
-                //do crossover
-                crossover();
-                //add the fittest offspring to population
-                addFittestOffspring();
-                population.calculateFitness();
-
-                //5% chance to mutate
-                if (rnd.Next(0,100) < 20)
+                if (strongest == null)
                 {
-                    mutation();
+                    strongest = population.getFittest();
+                }
+                else if (strongest.getFitness() > population.getFittest().getFitness())
+                {
+                    strongest = population.getFittest();
+                }
+
+                //perform algorithm while fitness > target weight
+                while (genCount < iterations)
+                {
+                    genCount++;
+                    //perform selection
+                    selection();
+
+
+                    int lestFitI = population.getLeastFittestIndex();
+
+
+                    //do crossover
+                    crossover();
+                    //add the fittest offspring to population
+                    addFittestOffspring();
                     population.calculateFitness();
+
+                    //5% chance to mutate
+                    if (rnd.Next(0, 100) < 20)
+                    {
+                        mutation();
+                        population.calculateFitness();
+                    }
+
+                    if (strongest.getFitness() > fittest.getFitness())
+                    {
+                        strongest = fittest;
+                    }
                 }
 
-                if (strongest.getFitness() > fittest.getFitness())
+                //build mst
+                foreach (Edge e in strongest.chromosome)
                 {
-                    strongest = fittest;
+                    if (mst == null)
+                    {
+                        mst = new Graph();
+                        mst.addNode(e.node1);
+                        mst.addNode(e.node2);
+
+                        mst.addEdge(e.weight, e.node1, e.node2, e.data);
+                    }
+                    if (!mst.hasVertex(e.node1))
+                    {
+                        mst.addNode(e.node1);
+                    }
+                    if (!mst.hasVertex(e.node2))
+                    {
+                        mst.addNode(e.node2);
+                    }
+
+                    if (!mst.hasEdge(e))
+                    {
+                        mst.addEdge(e.weight, e.node1, e.node2, e.data);
+                    }
                 }
+
+                return mst;
             }
 
-            //build mst
-            foreach(Edge e in strongest.chromosome)
+            //get two best individuals
+            private void selection()
             {
-                if (mst == null)
-                {
-                    mst = new Graph();
-                    mst.addNode(e.node1);
-                    mst.addNode(e.node2);
+                fittest = population.getFittest();
 
-                    mst.addEdge(e.weight, e.node1, e.node2, e.data);
-                }
-                if(!mst.hasVertex(e.node1))
-                {
-                    mst.addNode(e.node1);
-                }
-                if (!mst.hasVertex(e.node2))
-                {
-                    mst.addNode(e.node2);
-                }
-
-                if (!mst.hasEdge(e))
-                {
-                    mst.addEdge(e.weight, e.node1, e.node2, e.data);
-                }
+                secondFittest = population.getSecondFittest();
             }
 
-            return mst;
-        }
-
-        //get two best individuals
-        private void selection()
-        {
-            fittest = population.getFittest();
-
-            secondFittest = population.getSecondFittest();
-        }
-
-        //perform crossover
-        private void crossover()
-        {
-          
-            int crossOverPoint = rnd.Next(0, population.individuals[0].chromosome.Count);
-
-            //Swap values among parents
-            for (int i = 0; i < crossOverPoint; i++)
+            //perform crossover
+            private void crossover()
             {
-                Edge temp = fittest.chromosome.ElementAt(i);
-                fittest.chromosome[i] = secondFittest.chromosome.ElementAt(i);
-                secondFittest.chromosome[i] = temp;
 
-            }
-        }
-        
-        //mutates an individual
-        private void mutation()
-        {
-            
-            
+                int crossOverPoint = rnd.Next(0, population.individuals[0].chromosome.Count);
 
-
-            //Select a random mutation point
-            int mutationPoint = rnd.Next(population.individuals[0].chromosome.Count);
-
-            //see if there are more edges to mutate
-            if (temp.GetVertex(fittest.chromosome[mutationPoint].node1).neighbours.Count > 1)
-            {
-                foreach(Edge e in temp.GetVertex(fittest.chromosome[mutationPoint].node1).neighbours)
+                //Swap values among parents
+                for (int i = 0; i < crossOverPoint; i++)
                 {
-                    if (fittest.chromosome[mutationPoint].data != e.data) fittest.chromosome[mutationPoint] = e;
-                }
-                
-            }
-            else if (temp.GetVertex(fittest.chromosome[mutationPoint].node2).neighbours.Count > 1)
-            {
-                foreach (Edge e in temp.GetVertex(fittest.chromosome[mutationPoint].node2).neighbours)
-                {
-                    if (fittest.chromosome[mutationPoint].data != e.data) fittest.chromosome[mutationPoint] = e;
+                    Edge temp = fittest.chromosome.ElementAt(i);
+                    fittest.chromosome[i] = secondFittest.chromosome.ElementAt(i);
+                    secondFittest.chromosome[i] = temp;
+
                 }
             }
 
-            mutationPoint = rnd.Next(population.individuals[0].chromosome.Count);
-
-            //see if there are more edges to mutate
-            if (temp.GetVertex(secondFittest.chromosome[mutationPoint].node1).neighbours.Count > 1)
+            //mutates an individual
+            private void mutation()
             {
-                foreach (Edge e in temp.GetVertex(secondFittest.chromosome[mutationPoint].node1).neighbours)
+
+
+
+
+                //Select a random mutation point
+                int mutationPoint = rnd.Next(population.individuals[0].chromosome.Count);
+
+                //see if there are more edges to mutate
+                if (temp.GetVertex(fittest.chromosome[mutationPoint].node1).neighbours.Count > 1)
                 {
-                    if (secondFittest.chromosome[mutationPoint].data != e.data) secondFittest.chromosome[mutationPoint] = e;
+                    foreach (Edge e in temp.GetVertex(fittest.chromosome[mutationPoint].node1).neighbours)
+                    {
+                        if (fittest.chromosome[mutationPoint].data != e.data) fittest.chromosome[mutationPoint] = e;
+                    }
+
+                }
+                else if (temp.GetVertex(fittest.chromosome[mutationPoint].node2).neighbours.Count > 1)
+                {
+                    foreach (Edge e in temp.GetVertex(fittest.chromosome[mutationPoint].node2).neighbours)
+                    {
+                        if (fittest.chromosome[mutationPoint].data != e.data) fittest.chromosome[mutationPoint] = e;
+                    }
                 }
 
-            }
-            else if (temp.GetVertex(fittest.chromosome[mutationPoint].node2).neighbours.Count > 1)
-            {
-                foreach (Edge e in temp.GetVertex(secondFittest.chromosome[mutationPoint].node2).neighbours)
+                mutationPoint = rnd.Next(population.individuals[0].chromosome.Count);
+
+                //see if there are more edges to mutate
+                if (temp.GetVertex(secondFittest.chromosome[mutationPoint].node1).neighbours.Count > 1)
                 {
-                    if (secondFittest.chromosome[mutationPoint].data != e.data) secondFittest.chromosome[mutationPoint] = e;
+                    foreach (Edge e in temp.GetVertex(secondFittest.chromosome[mutationPoint].node1).neighbours)
+                    {
+                        if (secondFittest.chromosome[mutationPoint].data != e.data) secondFittest.chromosome[mutationPoint] = e;
+                    }
+
+                }
+                else if (temp.GetVertex(fittest.chromosome[mutationPoint].node2).neighbours.Count > 1)
+                {
+                    foreach (Edge e in temp.GetVertex(secondFittest.chromosome[mutationPoint].node2).neighbours)
+                    {
+                        if (secondFittest.chromosome[mutationPoint].data != e.data) secondFittest.chromosome[mutationPoint] = e;
+                    }
                 }
             }
-        }
 
-        //Get fittest offspring
-        Individual getFittestOffspring()
-        {
-            if (fittest.getFitness() > secondFittest.getFitness())
+            //Get fittest offspring
+            Individual getFittestOffspring()
             {
-                return fittest;
+                if (fittest.getFitness() > secondFittest.getFitness())
+                {
+                    return fittest;
+                }
+                return secondFittest;
             }
-            return secondFittest;
-        }
 
-
-        //Replace least fittest individual from most fittest offspring
-        void addFittestOffspring()
-        {
-
-            //Update fitness values of offspring
-            fittest.calcFitness();
-            secondFittest.calcFitness();
-
-            //Get index of least fit individual
-            int leastFittestIndex = population.getLeastFittestIndex();
 
             //Replace least fittest individual from most fittest offspring
-            population.individuals[leastFittestIndex] = getFittestOffspring();
-        }
-
-    }
-
-    class Individual
-    {
-        public float MaxFitness = 100;
-        public List<Vertex> genes;
-        public List<Edge> chromosome = new List<Edge>();
-        private int geneLength;
-
-        private float fitness;
-
-        private Random rnd;
-
-        public Individual(List<Vertex> vertices, Random rand)
-        {
-            rnd = rand;
-
-            genes = vertices;
-
-            geneLength = genes.Count;
-
-            //mmake the chromosome
-            genChromosome();
-
-            
-        }
-
-        //creates the chromosome by selecting random edges from each vertex
-        public void genChromosome()
-        {
-
-            foreach (Vertex v in genes)
+            void addFittestOffspring()
             {
-                //get a random index to select a random edge
-                var index = rnd.Next(0, v.neighbours.Count);
 
-                //add selected edge to chromosome
-                chromosome.Add(v.neighbours.ElementAt(index));
+                //Update fitness values of offspring
+                fittest.calcFitness();
+                secondFittest.calcFitness();
 
+                //Get index of least fit individual
+                int leastFittestIndex = population.getLeastFittestIndex();
+
+                //Replace least fittest individual from most fittest offspring
+                population.individuals[leastFittestIndex] = getFittestOffspring();
             }
 
         }
 
-        //returns the fitness of individual
-        public float getFitness()
+        class Individual
         {
-            return fitness;
-        }
-            
-        //calculate the fitness
-        public void calcFitness()
-        {
-            fitness = 0;
-            bool actualtree = true;
-            Graph temp = null;
+            public float MaxFitness = 100;
+            public List<Vertex> genes;
+            public List<Edge> chromosome = new List<Edge>();
+            private int geneLength;
 
-            foreach(Edge e in chromosome)
+            private float fitness;
+
+            private Random rnd;
+
+            public Individual(List<Vertex> vertices, Random rand)
             {
-                //add to temporary graph to check if edges already exist
-                if (temp == null)
+                rnd = rand;
+
+                genes = vertices;
+
+                geneLength = genes.Count;
+
+                //mmake the chromosome
+                genChromosome();
+
+
+            }
+
+            //creates the chromosome by selecting random edges from each vertex
+            public void genChromosome()
+            {
+
+                foreach (Vertex v in genes)
                 {
-                    temp = new Graph();
-                    temp.addNode(e.node1);
-                    temp.addNode(e.node2);
-                }
-                if (!temp.hasVertex(e.node1)) temp.addNode(e.node1);
-                if (!temp.hasVertex(e.node2)) temp.addNode(e.node2);
+                    //get a random index to select a random edge
+                    var index = rnd.Next(0, v.neighbours.Count);
 
-                //add edge to temp graph for comparisons
-                if (temp.hasEdge(e)) { fitness += MaxFitness; actualtree = false; }
-                if (!temp.hasEdge(e)) temp.addEdge(e.weight, e.node1, e.node2, e.data);
-                
+                    //add selected edge to chromosome
+                    chromosome.Add(v.neighbours.ElementAt(index));
 
-                //add the weight to fitness
-                fitness += e.weight;
-            }
-
-            if(temp.GetEdges().Count != genes.Count - 1) { fitness += MaxFitness*2; actualtree = false; }
-
-            var ca = new classicAlgorithms();
-
-            Vertex startV = null;
-            //chooese a start vertex that has more than 1 neighbour
-            foreach(Vertex v in temp.GetVertices())
-            {
-                if (v.neighbours.Count > 1) startV = v;
-            }
-            if (startV == null) startV = temp.getRandomVertex();
-            
-
-            if (ca.checkCycle(temp, startV) && startV != null)
-            {
-                fitness += MaxFitness;
-                actualtree = false;
-            }
-
-
-            if (actualtree == true)
-            {
-                fitness = temp.getGraphWeight();
-            }
-
-            
-           
-        }
-    }
-        
-    class Population
-    {
-        public Individual[] individuals;
-
-        public Population()
-        {
-           
-        }
-
-        public void init(int popSize, ref Graph g,float maxFitness, Random rand)
-        {
-            individuals = new Individual[popSize];
-            //Initialize population
-            for (int i = 0; i < individuals.Length; i++)
-            {
-                individuals[i] = new Individual(g.GetVertices(),rand);
-                individuals[i].MaxFitness = maxFitness;
-                individuals[i].calcFitness();
-                
-            }
-                
-        }
-
-        //return the fittest individual
-        public Individual getFittest()
-        {
-            float fittest = 0;
-            int index = 0;
-
-            for (int i = 0;i<individuals.Length; i++)
-            {
-                if (fittest == 0) fittest = individuals[i].getFitness();
-                else if (fittest > individuals[i].getFitness())
-                {
-                    fittest = individuals[i].getFitness();
-                    index = i;
                 }
 
             }
 
-            return individuals[index];
+            //returns the fitness of individual
+            public float getFitness()
+            {
+                return fitness;
+            }
+
+            //calculate the fitness
+            public void calcFitness()
+            {
+                fitness = 0;
+                bool actualtree = true;
+                Graph temp = null;
+
+                foreach (Edge e in chromosome)
+                {
+                    //add to temporary graph to check if edges already exist
+                    if (temp == null)
+                    {
+                        temp = new Graph();
+                        if (!temp.hasVertex(e.node1)) temp.addNode(e.node1);
+                        if (!temp.hasVertex(e.node2)) temp.addNode(e.node2);
+                    }
+                    if (!temp.hasVertex(e.node1)) temp.addNode(e.node1);
+                    if (!temp.hasVertex(e.node2)) temp.addNode(e.node2);
+
+                    //add edge to temp graph for comparisons
+                    if (temp.hasEdge(e)) { fitness += MaxFitness; actualtree = false; }
+                    if (!temp.hasEdge(e)) temp.addEdge(e.weight, e.node1, e.node2, e.data);
+
+
+                    //add the weight to fitness
+                    fitness += e.weight;
+                }
+
+                if (temp.GetEdges().Count != genes.Count - 1) { fitness += MaxFitness * 2; actualtree = false; }
+
+                var ca = new classicAlgorithms();
+
+                Vertex startV = null;
+                //chooese a start vertex that has more than 1 neighbour
+                foreach (Vertex v in temp.GetVertices())
+                {
+                    if (v.neighbours.Count > 1) startV = v;
+                }
+                if (startV == null) startV = temp.getRandomVertex();
+
+
+                if (ca.checkCycle(temp, startV) && startV != null)
+                {
+                    fitness += MaxFitness;
+                    actualtree = false;
+                }
+
+
+                if (actualtree == true)
+                {
+                    fitness = temp.getGraphWeight();
+                }
+
+
+
+            }
         }
 
-
-        //return the second fittest individual
-        public Individual getSecondFittest()
+        class Population
         {
-            float fittest = getFittest().getFitness();
-            float secondFit = 0;
-            int index = 0;
+            public Individual[] individuals;
 
-            for (int i = 0; i < individuals.Length; i++)
+            public Population()
             {
-                if (secondFit == 0 && individuals[i].getFitness() != fittest)
-                {
-                    secondFit = individuals[i].getFitness();
-                }
-                else if (secondFit > individuals[i].getFitness() && individuals[i].getFitness() != fittest)
-                {
-                    secondFit = individuals[i].getFitness();
-                    index = i;
-                }
-                
 
             }
 
-            return individuals[index];
-        }
-
-        //get the least fittest individual
-        public int getLeastFittestIndex()
-        {
-            float weakest = 0;
-            int index = 0;
-
-            for (int i = 0; i < individuals.Length; i++)
+            public void init(int popSize, ref Graph g, float maxFitness, Random rand)
             {
-                if (weakest == 0) weakest = individuals[i].getFitness();
-                else if (weakest > individuals[i].getFitness())
+                individuals = new Individual[popSize];
+                //Initialize population
+                for (int i = 0; i < individuals.Length; i++)
                 {
-                    weakest = individuals[i].getFitness();
-                    index = i;
+                    individuals[i] = new Individual(g.GetVertices(), rand);
+                    individuals[i].MaxFitness = maxFitness;
+                    individuals[i].calcFitness();
+
                 }
 
             }
 
-            return index;
-        }
-
-        //Calculate fitness of each individual
-        public void calculateFitness()
-        {
-
-            for (int i = 0; i < individuals.Length; i++)
+            //return the fittest individual
+            public Individual getFittest()
             {
-                individuals[i].calcFitness();
-            }
-            
-        }
+                float fittest = 0;
+                int index = 0;
 
+                for (int i = 0; i < individuals.Length; i++)
+                {
+                    if (fittest == 0) fittest = individuals[i].getFitness();
+                    else if (fittest > individuals[i].getFitness())
+                    {
+                        fittest = individuals[i].getFitness();
+                        index = i;
+                    }
+
+                }
+
+                return individuals[index];
+            }
+
+
+            //return the second fittest individual
+            public Individual getSecondFittest()
+            {
+                float fittest = getFittest().getFitness();
+                float secondFit = 0;
+                int index = 0;
+
+                for (int i = 0; i < individuals.Length; i++)
+                {
+                    if (secondFit == 0 && individuals[i].getFitness() != fittest)
+                    {
+                        secondFit = individuals[i].getFitness();
+                    }
+                    else if (secondFit > individuals[i].getFitness() && individuals[i].getFitness() != fittest)
+                    {
+                        secondFit = individuals[i].getFitness();
+                        index = i;
+                    }
+
+
+                }
+
+                return individuals[index];
+            }
+
+            //get the least fittest individual
+            public int getLeastFittestIndex()
+            {
+                float weakest = 0;
+                int index = 0;
+
+                for (int i = 0; i < individuals.Length; i++)
+                {
+                    if (weakest == 0) weakest = individuals[i].getFitness();
+                    else if (weakest > individuals[i].getFitness())
+                    {
+                        weakest = individuals[i].getFitness();
+                        index = i;
+                    }
+
+                }
+
+                return index;
+            }
+
+            //Calculate fitness of each individual
+            public void calculateFitness()
+            {
+
+                for (int i = 0; i < individuals.Length; i++)
+                {
+                    individuals[i].calcFitness();
+                }
+
+            }
+
+        }
     }
 }
+
