@@ -102,9 +102,9 @@ namespace MSTapplication
                     timeTaken.Content = elapsedMs;
 
                     //write time to desktop
-                    StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
-                    sw.WriteLine(elapsedMs);
-                    sw.Close();
+                    //StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
+                    //sw.WriteLine(elapsedMs);
+                    //sw.Close();
 
                     //colour the edges
                     if (drawEdges)
@@ -211,9 +211,9 @@ namespace MSTapplication
                     timeTaken.Content = elapsedMs;
 
                     //write time to desktop
-                    StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
-                    sw.WriteLine(elapsedMs);
-                    sw.Close();
+                    //StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
+                    //sw.WriteLine(elapsedMs);
+                    //sw.Close();
                     
 
 
@@ -308,9 +308,9 @@ namespace MSTapplication
                     timeTaken.Content = elapsedMs;
 
                     //write time to desktop
-                    StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
-                    sw.WriteLine(elapsedMs);
-                    sw.Close();
+                    //StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
+                    //sw.WriteLine(elapsedMs);
+                    //sw.Close();
 
 
                     //colour the edges
@@ -400,9 +400,9 @@ namespace MSTapplication
                     timeTaken.Content = elapsedMs;
 
                     //write time to desktop
-                    StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
-                    sw.WriteLine(elapsedMs);
-                    sw.Close();
+                    //StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
+                    //sw.WriteLine(elapsedMs);
+                    //sw.Close();
 
                     //colour the edges
                     if (drawEdges)
@@ -493,9 +493,9 @@ namespace MSTapplication
 
 
                 //write time to desktop
-                StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
-                sw.WriteLine(elapsedMs);
-                sw.Close();
+                //StreamWriter sw = new StreamWriter("D:\\Desktop\\speed.txt");
+                //sw.WriteLine(elapsedMs);
+                //sw.Close();
 
                 //colour the edges
                 if (drawEdges)
